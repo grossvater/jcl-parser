@@ -1,0 +1,9 @@
+generateGrammarSource {
+	outputDirectory = file("$buildDir/generated-src/antlr/main/org/grossvater/jcl/parser")
+	arguments += ["-visitor", "-long-messages"]
+}
+
+eclipse.project {
+	natures 'org.eclipse.xtext.ui.shared.xtextNature'
+	buildCommand 'org.eclipse.xtext.ui.shared.xtextBuilder'
+}

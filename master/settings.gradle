@@ -1,0 +1,7 @@
+apply from: 'projects.gradle'
+
+projects.each {
+	include it;
+	
+	project(":$it").projectDir = new File(settingsDir, "../$it")
+}

@@ -1,0 +1,71 @@
+apply plugin: 'eclipse'
+apply plugin: 'base'
+
+version = '0.0.1-SNAPSHOT'
+group = 'grossvater.jcl'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.1'
+}
+
+allprojects {
+    repositories {
+        jcenter() 
+    }
+}
+
+subprojects {
+    version = parent.version
+    group = parent.group
+}
+
+// all projects
+configure(subprojects.findAll()) { 
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'osgi'
+    apply plugin: 'maven'
+
+    dependencies {
+	compile 'org.slf4j:slf4j-api:1.7.21'
+    }
+
+    afterEvaluate {
+        jar {
+    	    manifest { m ->
+    	    	m.symbolicName = project.name
+	        m.version = project.version
+            }
+        }
+        
+		uploadArchives {
+		    repositories {
+		        mavenDeployer {
+		        }
+		    }
+		}
+    }
+}
+
+// parser projects
+configure(subprojects.findAll { it.name == 'org.grossvater.jcl.parser' }) { 
+    apply plugin: 'antlr'
+
+    dependencies {
+		compile (
+			[group: 'org.antlr', name: 'antlr4', version: '4.7'],
+			[group: 'org.antlr', name: 'antlr4-runtime', version: '4.7']
+		)
+		
+    	antlr (
+        	[group: 'org.antlr', name: 'antlr4', version: '4.7']
+    	)
+    }
+}
+
+// all test projects
+configure(subprojects.findAll { it.name.endsWith('.test') }) { 
+    dependencies {
+	compile 'junit:junit:4.12'
+    }
+}
