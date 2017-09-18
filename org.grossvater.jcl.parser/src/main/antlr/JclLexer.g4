@@ -24,7 +24,62 @@ import org.slf4j.LoggerFactory;
 
 @members {
 	private Logger L = LoggerFactory.getLogger(this.getClass());
+	
+	private JclParserOpts opts;
+	
+	public JclLexer(CharStream input, JclParserOpts opts) {
+		this(input);
+		
+		this.opts = opts != null ? opts 
+							     : JclParserOpts.newBuilder().build();
+	}
 }
 
+/* BEGIN mode: name (default) */
+fragment
+F_BLANK: [ ] | '\t'
+;
+
 NL: [\r]?[\n] -> channel(HIDDEN)
+;
+
+BLANK: F_BLANK
+;
+
+FIELD_ID: '//'
+;
+
+FIELD_INSTREAM_DELIM: '/*'
+;
+
+FIELD_COMMENT: '//*'
+;
+
+FIELD_NAME: F_BLANK -> mode(MODE_OP)
+;
+/* END mode: name (default) */
+
+mode MODE_OP;
+
+// can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
+FIELD_OP: ~[ \t]+ -> mode(MODE_OP)
+;
+
+mode MODE_PARAM;
+
+LP: '('
+;
+
+RP: ')'
+;
+
+EQ: '='
+;
+
+// can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
+PARAM_TOKEN: ~('=' | [ \t] | ',' | '(' | ')')
+;
+
+fragment 
+COMMA: ','
 ;

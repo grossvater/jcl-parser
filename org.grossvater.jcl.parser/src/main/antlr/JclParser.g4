@@ -19,7 +19,22 @@ options { tokenVocab=JclLexer; }
 
 @header {
 package org.grossvater.jcl.parser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 }
 
+@members {
+	private Logger L = LoggerFactory.getLogger(this.getClass());
+	
+	private JclParserOpts opts;
+	
+	public JclParser(TokenStream input, JclParserOpts opts) {
+		this(input);
+		
+		this.opts = opts != null ? opts 
+							     : JclParserOpts.newBuilder().build();
+	}
+}
 unit:
 ;
