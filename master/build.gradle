@@ -27,14 +27,14 @@ configure(subprojects.findAll()) {
     apply plugin: 'maven'
 
     dependencies {
-	compile 'org.slf4j:slf4j-api:1.7.21'
+		compile 'org.slf4j:slf4j-api:1.7.21'
     }
 
     afterEvaluate {
         jar {
     	    manifest { m ->
     	    	m.symbolicName = project.name
-	        m.version = project.version
+	        	m.version = project.version
             }
         }
         
@@ -66,6 +66,6 @@ configure(subprojects.findAll { it.name == 'org.grossvater.jcl.parser' }) {
 // all test projects
 configure(subprojects.findAll { it.name.endsWith('.test') }) { 
     dependencies {
-	compile 'junit:junit:4.12'
+		compile 'junit:junit:4.12'
     }
 }
