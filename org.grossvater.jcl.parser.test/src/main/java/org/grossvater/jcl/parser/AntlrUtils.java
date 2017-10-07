@@ -1,6 +1,10 @@
 package org.grossvater.jcl.parser;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class AntlrUtils {
 	private static Logger L = LoggerFactory.getLogger(AntlrUtils.class);
 	
-	public static AntlrResult parse(String filePath, JclParserOpts opts) {
+	public static AntlrResult parse(Reader sr, JclParserOpts opts) {
 		class ErrorListener extends BaseErrorListener {
 			int errors;
 			
@@ -53,7 +57,7 @@ public class AntlrUtils {
 		ErrorListener eh = new ErrorListener();
 		
 		try {
-			fs = CharStreams.fromFileName(filePath);
+			fs = CharStreams.fromReader(sr);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -71,17 +75,26 @@ public class AntlrUtils {
 		return new AntlrResult(tree, eh.errors, parser);
 	}
 	
+	
 	public static void match(String filePath, String xpath, String[] expr, int rule) {
 		match(filePath, xpath, expr, rule, null);
 	}
 	
 	public static void match(String filePath, String xpath, String[] expr, int rule, JclParserOpts opts) {
+		try {
+			match(new InputStreamReader(new FileInputStream(filePath)), xpath, expr, rule, opts);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} 
+	}
+	
+	public static void match(Reader sr, String xpath, String[] expr, int rule, JclParserOpts opts) {
 		AntlrResult r;
 		ParseTree tree;
 		int errors;
 		Parser parser;
 		
-		r = parse(filePath, opts);
+		r = parse(sr, opts);
 		
 		Assert.assertNotNull(r);
 		

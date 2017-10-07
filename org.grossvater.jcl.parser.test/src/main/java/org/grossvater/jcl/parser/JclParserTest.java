@@ -15,36 +15,41 @@
  */
 package org.grossvater.jcl.parser;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JclParserTest {
-	private static String RES = "/parser";
-	
 	private static Logger L = LoggerFactory.getLogger(JclParserTest.class);
 	
 	@Test
 	public void testEmpty() {
-		parse(RES, "empty.jcl", "/*", null, JclParser.RULE_unit);
+		parse("empty", "/*", null, JclParser.RULE_unit,
+			  "");
 	}
 	
-	private void parse(String base, String fileName, String xpath, String expr, int rule) {
-		parse(base, fileName, xpath, expr, rule, null);
+	@Test
+	public void testRecord1() {
+		parse("record1", "/*", "<FIELD_ID><FIELD_NAME><BLANK><FIELD_OP>", JclParser.RULE_unit,
+			  "//ptest myproc");
 	}
 	
-	private void parse(String base, String fileName, String xpath, String expr, int rule,
-					   JclParserOpts opts) {
-		String filePath;
+	@Test
+	public void testRecord2() {
+		parse("record2", "/*", "<FIELD_ID><BLANK><FIELD_OP>", JclParser.RULE_unit,
+			  "// myproc");
+	}
+	
+	private void parse(String testName, String xpath, String expr, int rule, String...lines) {
+		try (Reader r = TestUtils.makeReader(lines)) {
 		
-		filePath = TestUtils.makeFile(base, fileName);
-		
-		Assert.assertTrue(new File(filePath).exists());		
-		
-		L.info("Test {}/{}", base, fileName);
-		AntlrUtils.match(filePath, xpath, expr != null ? new String[] { expr } : null, rule, opts);
+			L.info("Test {}", testName);
+			AntlrUtils.match(r, xpath, expr != null ? new String[] { expr } : null, rule, null);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

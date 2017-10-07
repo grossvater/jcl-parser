@@ -37,13 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /* BEGIN mode: name (default) */
 fragment
-F_BLANK: [ ] | '\t'
-;
-
-NL: [\r]?[\n] -> channel(HIDDEN)
-;
-
-BLANK: F_BLANK
+F_BLANK: [ \t]
 ;
 
 FIELD_ID: '//'
@@ -55,15 +49,21 @@ FIELD_INSTREAM_DELIM: '/*'
 FIELD_COMMENT: '//*'
 ;
 
-FIELD_NAME: F_BLANK -> mode(MODE_OP)
+BLANK: F_BLANK -> mode(MODE_OP)
+;
+
+// can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
+FIELD_NAME: ~[ \t/] ~[ \t/]*
 ;
 /* END mode: name (default) */
 
 mode MODE_OP;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-FIELD_OP: ~[ \t]+ -> mode(MODE_OP)
+FIELD_OP: ~[ \t]+
 ;
+
+OP_BANK: F_BLANK -> type(BLANK), mode(MODE_PARAM);
 
 mode MODE_PARAM;
 
@@ -76,10 +76,13 @@ RP: ')'
 EQ: '='
 ;
 
+COMMA: F_COMMA
+;
+
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-PARAM_TOKEN: ~('=' | [ \t] | ',' | '(' | ')')
+PARAM_TOKEN: ~('=' | [ \t] | ',' | '(' | ')')+
 ;
 
 fragment 
-COMMA: ','
+F_COMMA: ','
 ;
