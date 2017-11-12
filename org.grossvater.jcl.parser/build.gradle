@@ -7,3 +7,10 @@ eclipse.project {
 	natures 'org.eclipse.xtext.ui.shared.xtextNature'
 	buildCommand 'org.eclipse.xtext.ui.shared.xtextBuilder'
 }
+
+eclipse.classpath.file {
+    whenMerged { classpath ->
+        classpath.entries.findAll { entry -> entry.kind == 'src' && entry.path == "build/generated-src/antlr/main".toString() }
+        						  *.path = 'target/generated-src/antlr/main'
+    }
+}
