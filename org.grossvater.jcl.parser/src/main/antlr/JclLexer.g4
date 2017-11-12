@@ -35,27 +35,52 @@ import org.slf4j.LoggerFactory;
 	}
 }
 
-/* BEGIN mode: name (default) */
+/* BEGIN mode: id (default) */
 fragment
-F_BLANK: [ \t]
+F_BLANK: [ \t]+
 ;
 
 FIELD_ID: '//'
 ;
 
-FIELD_INSTREAM_DELIM: '/*'
+FIELD_INSTREAM_DELIM: '/*' -> mode(MODE_DELIM)
 ;
 
-FIELD_COMMENT: '//*'
+FIELD_COMMENT: '//*' -> mode(MODE_COMMENT)
 ;
 
-BLANK: F_BLANK -> mode(MODE_OP)
+BLANK: F_BLANK -> channel(HIDDEN), mode(MODE_OP)
 ;
 
+NL: '\n' | '\n\r'
+;
+/* END mode: id (default) */
+
+/* BEGIN mode: name */
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-FIELD_NAME: ~[ \t/] ~[ \t/]*
+FIELD_NAME: ~[ \t/] ~[ \t]*
 ;
-/* END mode: name (default) */
+
+NAME_BLANK: F_BLANK -> channel(HIDDEN), type(BLANK), mode(MODE_OP)
+;
+/* END mode: name */
+
+mode MODE_COMMENT;
+COMMENT: ~[\n]+
+;
+
+COMMENT_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE /* mode: id */)
+;
+
+mode MODE_DELIM;
+DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* -> type(COMMENT), mode(DEFAULT_MODE /* mode: id */)
+;
+
+DELIM_BLANK: {getInterpreter().getCharPositionInLine() == 2}? F_BLANK -> channel(HIDDEN), type(BLANK)
+;
+
+DELIM_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE /* mode: id */)
+;
 
 mode MODE_OP;
 

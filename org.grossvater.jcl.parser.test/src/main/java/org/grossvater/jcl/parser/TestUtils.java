@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.antlr.v4.runtime.Token;
@@ -41,15 +42,25 @@ public class TestUtils {
 		
 		return new StringReader(b.toString());
 	}
+
+	public static void assertEquals(List<Token> tokens, int[] expected) {
+		ExToken[] exTokens = new ExToken[expected.length];
+		
+		for (int i = 0; i < expected.length; i++) {
+			exTokens[i] = new ExToken(expected[i]);
+		}
+		
+		assertEquals(tokens, exTokens);
+	}
 	
-	public static void assertEquals(List<Token> tokens, List<ExToken> expected) {
+	public static void assertEquals(List<Token> tokens, ExToken[] expected) {
 		notNull(tokens);
 		notNull(expected);
 		
-		Assert.assertEquals(expected.size(), tokens.size());
+		Assert.assertEquals(expected.length, tokens.size());
 		
 		Iterator<Token> it = tokens.iterator();
-		Iterator<ExToken> exIt = expected.iterator();
+		Iterator<ExToken> exIt = Arrays.asList(expected).iterator();
 		int i = 0;
 		
 		while (it.hasNext() && exIt.hasNext()) {
