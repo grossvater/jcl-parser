@@ -85,7 +85,7 @@ DELIM_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE /* mode: id */)
 mode MODE_OP;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-FIELD_OP: ~[ \t\n\r]+
+FIELD_OP: ~[ \t]+
 ;
 
 OP_BANK: F_BLANK -> type(BLANK), mode(MODE_PARAM)
@@ -106,7 +106,7 @@ COMMA: F_COMMA
 ;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-PARAM_TOKEN: ~('=' | [ \t] | ',' | '(' | ')')+
+PARAM_TOKEN: ~('=' | [ \t\n\r] | ',' | '(' | ')')+
 ;
 
 fragment 
