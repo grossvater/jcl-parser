@@ -1,5 +1,7 @@
 package org.grossvater.jcl.parser;
 
+import static org.grossvater.jcl.parser.TestUtils.assertEquals;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,20 +37,20 @@ import org.slf4j.LoggerFactory;
 public class AntlrUtils {
 	private static Logger L = LoggerFactory.getLogger(AntlrUtils.class);
 	
-	public static AntlrResult parse(Reader sr, JclParserOpts opts) {
-		class ErrorListener extends BaseErrorListener {
-			int errors;
-			
-			@Override
-			public void syntaxError(Recognizer<?, ?> recognizer,
-									Object offendingSymbol,
-									int line, int charPositionInLine,
-									String msg,
-									RecognitionException e) {
-				this.errors++;
-			}
-		}
+	static class ErrorListener extends BaseErrorListener {
+		int errors;
 		
+		@Override
+		public void syntaxError(Recognizer<?, ?> recognizer,
+								Object offendingSymbol,
+								int line, int charPositionInLine,
+								String msg,
+								RecognitionException e) {
+			this.errors++;
+		}
+	}
+	
+	public static AntlrResult parse(Reader sr, JclParserOpts opts) {		
 		ParseTree tree;		
 		CharStream fs;
 		JclLexer lexer;
@@ -75,7 +77,40 @@ public class AntlrUtils {
 		return new AntlrResult(tree, eh.errors, parser);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static void test(String content, ExToken[] expected) {
+		JclLexer l = new JclLexer(CharStreams.fromString(content));
+		List<Token> tokens;
+		ErrorListener el = new ErrorListener();
+		
+		l.addErrorListener(el);
+		
+		tokens = (List<Token>)l.getAllTokens();
+		L.debug("Tokens: {}", ParseUtils.toString(tokens));
+		
+		Assert.assertEquals(0, el.errors);
+		assertEquals(tokens, expected);
+	}
 	
+	@SuppressWarnings("unchecked")
+	public static void match(String content, int[] expected) {
+		JclLexer l = new JclLexer(CharStreams.fromString(content));
+		List<Token> tokens;
+		ErrorListener el = new ErrorListener();
+		
+		l.addErrorListener(el);
+		
+		tokens = (List<Token>)l.getAllTokens();
+		L.debug("Tokens: {}", ParseUtils.toString(tokens));
+		
+		Assert.assertEquals(0, el.errors);
+		assertEquals(tokens, expected);
+	}	
+
+	public static void match(String content, ExToken expected) {
+		test(content, new ExToken[] { expected });
+	}	
+
 	public static void match(String filePath, String xpath, String[] expr, int rule) {
 		match(filePath, xpath, expr, rule, null);
 	}
