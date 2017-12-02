@@ -86,6 +86,6 @@ public class JclLexerTest {
 	@Test
 	public void testEndComment() {
 		AntlrUtils.match("//XXX YYY A END OF LINE", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
-																JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.COMMENT });
+																JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.BLANK, JclLexer.COMMENT });
 	}
 }
