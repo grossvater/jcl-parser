@@ -116,7 +116,13 @@ COMMA: ','
 PARAM_TOKEN: ~('=' | [ \t\n\r] | ',' | '(' | ')')+
 ;
 
-PARAM_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+PARAM_NL: {_input.LA(-1) != ','}? '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+;
+
+// the standard says the line is continued somewhere between columns 4 and 16,
+// but we don't care about the upper limit
+PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\n' '\r'? '// '
+	-> channel(HIDDEN), type(NL)
 ;
 
 PARAM_BANK: F_BLANK -> type(BLANK), mode(MODE_COMMENT)
