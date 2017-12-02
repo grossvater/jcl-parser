@@ -57,7 +57,7 @@ public class TestUtils {
 		notNull(tokens);
 		notNull(expected);
 		
-		Assert.assertEquals(expected.length, tokens.size());
+		Assert.assertEquals("Invalid token number.", expected.length, tokens.size());
 		
 		Iterator<Token> it = tokens.iterator();
 		Iterator<ExToken> exIt = Arrays.asList(expected).iterator();
