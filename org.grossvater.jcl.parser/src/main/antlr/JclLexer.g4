@@ -85,10 +85,11 @@ DELIM_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE /* mode: id */)
 mode MODE_OP;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-FIELD_OP: ~[ \t]+
+FIELD_OP: ~[ \t\n\r]+
 ;
 
-OP_BANK: F_BLANK -> type(BLANK), mode(MODE_PARAM);
+OP_BANK: F_BLANK -> type(BLANK), mode(MODE_PARAM)
+;
 
 mode MODE_PARAM;
 
