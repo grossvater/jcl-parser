@@ -33,13 +33,13 @@ public class JclParserTest {
 	
 	@Test
 	public void testRecord1() {
-		parse("record1", "/*", "<FIELD_ID><FIELD_NAME><BLANK><FIELD_OP>", JclParser.RULE_unit,
+		parse("record1", "/*", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_unit,
 			  "//ptest myproc");
 	}
 	
 	@Test
 	public void testRecord2() {
-		parse("record2", "/*", "<FIELD_ID><BLANK><FIELD_OP>", JclParser.RULE_unit,
+		parse("record2", "/*", "<FIELD_ID><FIELD_OP>", JclParser.RULE_unit,
 			  "// myproc");
 	}
 	

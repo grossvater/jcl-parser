@@ -40,7 +40,7 @@ unit: record*
 ;
 
 record:
-	FIELD_ID FIELD_NAME? BLANK FIELD_OP posParams? kwParams?
+	FIELD_ID FIELD_NAME? FIELD_OP posParams? kwParams?
 ;
 
 posParams:
