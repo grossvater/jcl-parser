@@ -47,5 +47,32 @@ public class JclLexerTest {
 	
 	public void testOperation() {
 		AntlrUtils.match("//XXX YYY", new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_OP });
+	}
+	
+	public void testPosParam() {
+		AntlrUtils.match("//XXX YYY A", new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_OP,
+													JclLexer.PARAM_TOKEN });
+	}
+
+	public void testPosParams() {
+		AntlrUtils.match("//XXX YYY A, B", new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_OP,
+													JclLexer.PARAM_TOKEN, JclLexer.COMMA, JclLexer.PARAM_TOKEN });
+	}
+	
+	public void testKwParam() {
+		AntlrUtils.match("//XXX YYY A=B", new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_OP,
+													JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN });
+	}
+	
+	public void testKwEmptyParam() {
+		AntlrUtils.match("//XXX YYY A=", new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_OP,
+													JclLexer.PARAM_TOKEN, JclLexer.EQ });
+	}
+	
+	public void testKwParamS() {
+		AntlrUtils.match("//XXX YYY A=B,X=Y", new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_OP,
+													JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN,
+													JclLexer.COMMA, 
+													JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN });
 	}	
 }
