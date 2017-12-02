@@ -113,6 +113,9 @@ fragment
 F_COMMA: ','
 ;
 
+PARAM_BANK: F_BLANK -> type(BLANK), mode(MODE_COMMENT)
+;
+
 mode MODE_COMMENT;
 
 END_LINE_COMMENT: ~[\n\r]+ -> type(COMMENT), mode(DEFAULT_MODE)
