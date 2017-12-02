@@ -52,16 +52,20 @@ FIELD_COMMENT: '//*' -> mode(MODE_COMMENT)
 BLANK: F_BLANK -> channel(HIDDEN), mode(MODE_OP)
 ;
 
-NL: '\n' | '\n\r'
+NL: '\n' '\r'? -> channel(HIDDEN)
 ;
 /* END mode: id (default) */
 
 /* BEGIN mode: name */
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-FIELD_NAME: ~[ \t/] ~[ \t]*
+// TODO: what about /
+FIELD_NAME: ~[ \t\n\r/] ~[ \t\r\n]*
 ;
 
 NAME_BLANK: F_BLANK -> channel(HIDDEN), type(BLANK), mode(MODE_OP)
+;
+
+NAME_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 /* END mode: name */
 
@@ -69,7 +73,7 @@ mode MODE_COMMENT;
 COMMENT: ~[\n]+
 ;
 
-COMMENT_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE /* mode: id */)
+COMMENT_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE)
 ;
 
 mode MODE_DELIM;
@@ -79,16 +83,19 @@ DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* -> type(
 DELIM_BLANK: {getInterpreter().getCharPositionInLine() == 2}? F_BLANK -> channel(HIDDEN), type(BLANK)
 ;
 
-DELIM_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE /* mode: id */)
+DELIM_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 
 mode MODE_OP;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
-FIELD_OP: ~[ \t]+
+FIELD_OP: ~[ \t\n\r]+
 ;
 
 OP_BANK: F_BLANK -> type(BLANK), mode(MODE_PARAM)
+;
+
+OP_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 
 mode MODE_PARAM;
@@ -102,15 +109,14 @@ RP: ')'
 EQ: '='
 ;
 
-COMMA: F_COMMA
+COMMA: ','
 ;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
 PARAM_TOKEN: ~('=' | [ \t\n\r] | ',' | '(' | ')')+
 ;
 
-fragment 
-F_COMMA: ','
+PARAM_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 
 PARAM_BANK: F_BLANK -> type(BLANK), mode(MODE_COMMENT)
@@ -119,4 +125,7 @@ PARAM_BANK: F_BLANK -> type(BLANK), mode(MODE_COMMENT)
 mode MODE_COMMENT;
 
 END_LINE_COMMENT: ~[\n\r]+ -> type(COMMENT), mode(DEFAULT_MODE)
+;
+
+END_LINE_COMMENT_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
