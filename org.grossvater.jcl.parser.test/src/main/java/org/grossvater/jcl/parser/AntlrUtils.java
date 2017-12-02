@@ -78,7 +78,7 @@ public class AntlrUtils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void test(String content, ExToken[] expected) {
+	public static void match(String content, ExToken[] expected) {
 		JclLexer l = new JclLexer(CharStreams.fromString(content));
 		List<Token> tokens;
 		ErrorListener el = new ErrorListener();
@@ -108,7 +108,7 @@ public class AntlrUtils {
 	}	
 
 	public static void match(String content, ExToken expected) {
-		test(content, new ExToken[] { expected });
+		match(content, new ExToken[] { expected });
 	}	
 
 	public static void match(String filePath, String xpath, String[] expr, int rule) {

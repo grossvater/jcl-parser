@@ -68,7 +68,16 @@ public class JclLexerTest {
 		AntlrUtils.match("//XXX YYY A=B", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
 													  JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN });
 	}
-	
+
+	// TODO: fix me
+    @Test
+    @Ignore
+    public void testKwParamOdd() {
+        AntlrUtils.match("//XXX YYY A=B=C", new ExToken[] { new ExToken(JclLexer.FIELD_ID), new ExToken(JclLexer.FIELD_NAME), new ExToken(JclLexer.BLANK), 
+                                                            new ExToken(JclLexer.FIELD_OP), new ExToken(JclLexer.BLANK), 
+                                                            new ExToken(JclLexer.PARAM_TOKEN), new ExToken(JclLexer.EQ), new ExToken(JclLexer.PARAM_TOKEN, "B=C") });
+    }
+
 	@Test
 	public void testKwEmptyParam() {
 		AntlrUtils.match("//XXX YYY A=", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
