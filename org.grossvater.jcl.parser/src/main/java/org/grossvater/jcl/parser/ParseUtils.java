@@ -22,7 +22,7 @@ public class ParseUtils {
 		b.append("[");
 		int i = 0;
 		for (Token t : tokens) {
-			if (i++ > 0) {
+			if (i > 0) {
 				b.append(',');
 				if ((flags & TOKEN_TS_F_NL_BEFORE) > 0) {
 					b.append("\n");
@@ -31,7 +31,9 @@ public class ParseUtils {
 				}
 			}
 			
-			b.append("[");
+			b.append("[@");
+			b.append(i);
+			b.append(':');
 			b.append(t.getLine());
 			b.append(':');
 			b.append(t.getStartIndex());
@@ -42,6 +44,8 @@ public class ParseUtils {
 			b.append(':');
 			b.append(t.getType());
 			b.append("]");
+			
+			i++;
 		}
 		b.append("]");
 		return b.toString();
