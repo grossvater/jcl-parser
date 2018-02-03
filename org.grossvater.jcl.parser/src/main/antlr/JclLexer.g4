@@ -52,7 +52,7 @@ FIELD_COMMENT: '//*' -> mode(MODE_COMMENT)
 BLANK: F_BLANK -> channel(HIDDEN), mode(MODE_OP)
 ;
 
-NL: '\n' '\r'? -> channel(HIDDEN)
+NL: '\r'? '\n' -> channel(HIDDEN)
 ;
 /* END mode: id (default) */
 
@@ -65,7 +65,7 @@ FIELD_NAME: ~[ \t\n\r/] ~[ \t\r\n]*
 NAME_BLANK: F_BLANK -> channel(HIDDEN), type(BLANK), mode(MODE_OP)
 ;
 
-NAME_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+NAME_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 /* END mode: name */
 
@@ -73,7 +73,7 @@ mode MODE_COMMENT;
 COMMENT: ~[\n]+
 ;
 
-COMMENT_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE)
+COMMENT_NL: '\r'? '\n' -> type(NL), mode(DEFAULT_MODE)
 ;
 
 mode MODE_INSTREAM_DELIM;
@@ -83,7 +83,7 @@ DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* -> type(
 DELIM_BLANK: {getInterpreter().getCharPositionInLine() == 2}? F_BLANK -> channel(HIDDEN), type(BLANK)
 ;
 
-DELIM_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+DELIM_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 
 mode MODE_OP;
@@ -95,7 +95,7 @@ FIELD_OP: ~[ \t\n\r]+
 OP_BANK: F_BLANK -> type(BLANK), mode(MODE_PARAM)
 ;
 
-OP_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+OP_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 
 mode MODE_PARAM;
@@ -116,12 +116,12 @@ COMMA: ','
 PARAM_TOKEN: ~('=' | [ \t\n\r] | ',' | '(' | ')')+
 ;
 
-PARAM_NL: {_input.LA(-1) != ','}? '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+PARAM_NL: {_input.LA(-1) != ','}? '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
 
 // the standard says the line is continued somewhere between columns 4 and 16,
 // but we don't care about the upper limit
-PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\n' '\r'? '// '
+PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' '// '
 	-> channel(HIDDEN), type(NL)
 ;
 
@@ -133,5 +133,5 @@ mode MODE_COMMENT;
 END_LINE_COMMENT: ~[\n\r]+ -> type(COMMENT), mode(DEFAULT_MODE)
 ;
 
-END_LINE_COMMENT_NL: '\n' '\r'? -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+END_LINE_COMMENT_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
 ;
