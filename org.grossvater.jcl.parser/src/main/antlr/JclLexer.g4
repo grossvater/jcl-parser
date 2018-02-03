@@ -26,12 +26,32 @@ import org.slf4j.LoggerFactory;
 	private Logger L = LoggerFactory.getLogger(this.getClass());
 	
 	private JclParserOpts opts;
+	private boolean cont = false;
 	
 	public JclLexer(CharStream input, JclParserOpts opts) {
 		this(input);
 		
 		this.opts = opts != null ? opts 
 							     : JclParserOpts.newBuilder().build();
+	}
+
+	private void _mode(int mode) {
+		_mode(mode, null);
+	}
+		
+	private void _mode(int mode, Boolean cont) {
+		if (L.isTraceEnabled()) {
+			L.trace("Mode {}=>{}", this._mode, mode);
+		}
+		
+		mode(mode);
+		if (cont != null) {
+			L.trace("Cont mode: {}.", cont);
+			this.cont = cont;
+		} else if (_mode == DEFAULT_MODE) {
+			L.trace("Exit cont mode.");
+			this.cont = false;
+		}
 	}
 }
 
@@ -40,32 +60,44 @@ fragment
 F_BLANK: [ \t]+
 ;
 
-FIELD_ID: '//'
+FIELD_ID: '//' { 
+	if (this.cont) {
+		if (_input.LA(1) == ' ') {
+			_mode(MODE_CONT_EAT_SPACE);
+		} else {
+			// TODO: use a message logger
+			System.err.println("Broken continuation line.");
+			_mode(MODE_NAME, false);
+		}		
+	} else {
+		_mode(MODE_NAME);
+	}
+}
 ;
 
-FIELD_INSTREAM_DELIM: '/*' -> mode(MODE_INSTREAM_DELIM)
+FIELD_INSTREAM_DELIM: {!this.cont}? '/*' { _mode(MODE_INSTREAM_DELIM); }
 ;
 
-FIELD_COMMENT: '//*' -> mode(MODE_COMMENT)
-;
-
-BLANK: F_BLANK -> channel(HIDDEN), mode(MODE_OP)
+FIELD_COMMENT: '//*' { _mode(MODE_COMMENT); }
 ;
 
 NL: '\r'? '\n' -> channel(HIDDEN)
 ;
+
 /* END mode: id (default) */
 
 /* BEGIN mode: name */
+mode MODE_NAME;
+
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
 // TODO: what about /
 FIELD_NAME: ~[ \t\n\r/] ~[ \t\r\n]*
 ;
 
-NAME_BLANK: F_BLANK -> channel(HIDDEN), type(BLANK), mode(MODE_OP)
+BLANK: F_BLANK { _mode(MODE_OP); } -> channel(HIDDEN)
 ;
 
-NAME_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+NAME_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;
 /* END mode: name */
 
@@ -73,17 +105,17 @@ mode MODE_COMMENT;
 COMMENT: ~[\n]+
 ;
 
-COMMENT_NL: '\r'? '\n' -> type(NL), mode(DEFAULT_MODE)
+COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE, this.cont); } -> type(NL)
 ;
 
 mode MODE_INSTREAM_DELIM;
-DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* -> type(COMMENT), mode(DEFAULT_MODE /* mode: id */)
+DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* { _mode(DEFAULT_MODE); } -> type(COMMENT)
 ;
 
 DELIM_BLANK: {getInterpreter().getCharPositionInLine() == 2}? F_BLANK -> channel(HIDDEN), type(BLANK)
 ;
 
-DELIM_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+DELIM_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;
 
 mode MODE_OP;
@@ -92,10 +124,10 @@ mode MODE_OP;
 FIELD_OP: ~[ \t\n\r]+
 ;
 
-OP_BANK: F_BLANK -> type(BLANK), mode(MODE_PARAM)
+OP_BANK: F_BLANK { _mode(MODE_PARAM); } -> type(BLANK)
 ;
 
-OP_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+OP_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;
 
 mode MODE_PARAM;
@@ -116,22 +148,27 @@ COMMA: ','
 PARAM_TOKEN: ~('=' | [ \t\n\r] | ',' | '(' | ')')+
 ;
 
-PARAM_NL: {_input.LA(-1) != ','}? '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+PARAM_NL: {_input.LA(-1) != ','}? '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;
 
-// the standard says the line is continued somewhere between columns 4 and 16,
-// but we don't care about the upper limit
-PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' '// '
+PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' { _mode(DEFAULT_MODE, true); }
 	-> channel(HIDDEN), type(NL)
 ;
 
-PARAM_BANK: F_BLANK -> type(BLANK), mode(MODE_COMMENT)
+PARAM_BANK: F_BLANK { _mode(MODE_COMMENT); } -> type(BLANK)
 ;
 
 mode MODE_COMMENT;
 
-END_LINE_COMMENT: ~[\n\r]+ -> type(COMMENT), mode(DEFAULT_MODE)
+END_LINE_COMMENT: ~[\n\r]+ { _mode(DEFAULT_MODE); } -> type(COMMENT)
 ;
 
-END_LINE_COMMENT_NL: '\r'? '\n' -> channel(HIDDEN), type(NL), mode(DEFAULT_MODE)
+END_LINE_COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
+;
+
+mode MODE_CONT_EAT_SPACE;
+
+// the standard says the line is continued somewhere between columns 4 and 16,
+// but we don't care about the upper limit
+CONT_BLANK: F_BLANK { _mode(MODE_PARAM, false); } -> channel(HIDDEN), type(BLANK)
 ;
