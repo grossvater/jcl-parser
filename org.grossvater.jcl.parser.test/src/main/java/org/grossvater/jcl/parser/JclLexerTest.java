@@ -63,8 +63,14 @@ public class JclLexerTest {
 		AntlrUtils.match("//XXX YYY A, COMMENT", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
 											                 JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.COMMA, JclLexer.BLANK, JclLexer.COMMENT});
 	}
-	
+
 	@Test	
+	public void testPosStringParams() {
+		AntlrUtils.match("//XXX YYY 'A'", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
+											                 JclLexer.BLANK, JclLexer.PARAM_STRING_TOKEN});
+	}
+	
+	@Test
 	public void testKwParam() {
 		AntlrUtils.match("//XXX YYY A=B", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
 													  JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN });
