@@ -43,7 +43,7 @@ F_BLANK: [ \t]+
 FIELD_ID: '//'
 ;
 
-FIELD_INSTREAM_DELIM: '/*' -> mode(MODE_DELIM)
+FIELD_INSTREAM_DELIM: '/*' -> mode(MODE_INSTREAM_DELIM)
 ;
 
 FIELD_COMMENT: '//*' -> mode(MODE_COMMENT)
@@ -76,7 +76,7 @@ COMMENT: ~[\n]+
 COMMENT_NL: '\n' '\r'? -> type(NL), mode(DEFAULT_MODE)
 ;
 
-mode MODE_DELIM;
+mode MODE_INSTREAM_DELIM;
 DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* -> type(COMMENT), mode(DEFAULT_MODE /* mode: id */)
 ;
 
