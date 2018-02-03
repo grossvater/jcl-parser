@@ -26,7 +26,13 @@ import org.slf4j.LoggerFactory;
 	private Logger L = LoggerFactory.getLogger(this.getClass());
 	
 	private JclParserOpts opts;
-	private boolean cont = false;
+	private Cont submode = Cont.None;
+	
+	private enum Cont {
+		None,
+		Param,
+		Comment
+	}
 	
 	public JclLexer(CharStream input, JclParserOpts opts) {
 		this(input);
@@ -34,59 +40,82 @@ import org.slf4j.LoggerFactory;
 		this.opts = opts != null ? opts 
 							     : JclParserOpts.newBuilder().build();
 	}
-
+	
+	@Override
+	public void reset() {
+		super.reset();
+		this.submode = Cont.None;
+	}
+	
 	private void _mode(int mode) {
 		_mode(mode, null);
 	}
 		
-	private void _mode(int mode, Boolean cont) {
+	private void _mode(int newmode, Cont submode) {
 		if (L.isTraceEnabled()) {
-			L.trace("Mode {}=>{}", this._mode, mode);
+			L.trace("Mode {}=>{}", this._mode, newmode);
 		}
 		
-		mode(mode);
-		if (cont != null) {
-			L.trace("Cont mode: {}.", cont);
-			this.cont = cont;
-		} else if (_mode == DEFAULT_MODE) {
-			L.trace("Exit cont mode.");
-			this.cont = false;
+		if (submode != null) {
+			if (this.submode != submode) {
+				this.submode = submode;
+				
+				if (L.isTraceEnabled()) {
+					L.trace("Submode: {}.", submode);
+				}
+			}			
+		} else if (_mode == DEFAULT_MODE && this.submode != Cont.None) {
+			this.submode = Cont.None;
+			
+			if (L.isTraceEnabled()) {
+				L.trace("Exit cont mode.");
+			}			
 		}
+		
+		mode(newmode);		
 	}
 }
 
-/* BEGIN mode: id (default) */
 fragment
 F_BLANK: [ \t]+
 ;
 
 FIELD_ID: '//' { 
-	if (this.cont) {
+	if (this.submode != Cont.None) {
 		if (_input.LA(1) == ' ') {
-			_mode(MODE_CONT_EAT_SPACE);
+			_mode(MODE_CONT_EAT_SPACE, this.submode);
 		} else {
 			// TODO: use a message logger
 			System.err.println("Broken continuation line.");
-			_mode(MODE_NAME, false);
-		}		
+			_mode(MODE_NAME);
+		}
 	} else {
 		_mode(MODE_NAME);
 	}
 }
 ;
 
-FIELD_INSTREAM_DELIM: {!this.cont}? '/*' { _mode(MODE_INSTREAM_DELIM); }
+FIELD_INSTREAM_DELIM: '/*' { 
+	if (this.submode != Cont.None) {
+		System.err.println("Broken continuation line.");
+	}
+	
+	_mode(MODE_INSTREAM_DELIM);
+}
 ;
 
-FIELD_COMMENT: '//*' { _mode(MODE_COMMENT); }
+FIELD_COMMENT: '//*' {
+	if (submode != Cont.None && submode != Cont.Param) {
+		System.err.println("Broken continuation line.");
+	}
+		 
+	_mode(MODE_COMMENT);
+}
 ;
 
 NL: '\r'? '\n' -> channel(HIDDEN)
 ;
 
-/* END mode: id (default) */
-
-/* BEGIN mode: name */
 mode MODE_NAME;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
@@ -99,13 +128,12 @@ BLANK: F_BLANK { _mode(MODE_OP); } -> channel(HIDDEN)
 
 NAME_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;
-/* END mode: name */
 
 mode MODE_COMMENT;
 COMMENT: ~[\n]+
 ;
 
-COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE, this.cont); } -> type(NL)
+COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> type(NL)
 ;
 
 mode MODE_INSTREAM_DELIM;
@@ -151,16 +179,24 @@ PARAM_TOKEN: ~('=' | [ \t\n\r] | ',' | '(' | ')')+
 PARAM_NL: {_input.LA(-1) != ','}? '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;
 
-PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' { _mode(DEFAULT_MODE, true); }
+PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' { _mode(DEFAULT_MODE, Cont.Param); }
 	-> channel(HIDDEN), type(NL)
 ;
 
-PARAM_BANK: F_BLANK { _mode(MODE_COMMENT); } -> type(BLANK)
+PARAM_BANK: F_BLANK { _mode(MODE_ND_LINE_COMMENT); } -> type(BLANK)
 ;
 
-mode MODE_COMMENT;
+mode MODE_ND_LINE_COMMENT;
 
-END_LINE_COMMENT: ~[\n\r]+ { _mode(DEFAULT_MODE); } -> type(COMMENT)
+END_LINE_COMMENT: ~[\n\r]+ {
+	String t = getText();
+	 
+	if (t.charAt(t.length() - 1) == ' ') {
+		_mode(DEFAULT_MODE);
+	} else {
+		_mode(DEFAULT_MODE, Cont.Comment);
+	}
+} -> type(COMMENT)
 ;
 
 END_LINE_COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
@@ -170,5 +206,14 @@ mode MODE_CONT_EAT_SPACE;
 
 // the standard says the line is continued somewhere between columns 4 and 16,
 // but we don't care about the upper limit
-CONT_BLANK: F_BLANK { _mode(MODE_PARAM, false); } -> channel(HIDDEN), type(BLANK)
+CONT_EAT_SPACE_BLANK: F_BLANK { 
+	int mode = DEFAULT_MODE;
+	
+	if (this.submode == Cont.Comment) {
+		mode = MODE_COMMENT;
+	} else if (this.submode == Cont.Param) {
+		mode = MODE_PARAM;
+	}
+	_mode(mode, null);	
+} -> channel(HIDDEN), type(BLANK)
 ;
