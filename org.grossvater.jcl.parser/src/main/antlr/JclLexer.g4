@@ -20,6 +20,7 @@ package org.grossvater.jcl.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 }
 
 @members {
@@ -47,12 +48,18 @@ import org.slf4j.LoggerFactory;
         super.reset();
         this.cont = Cont.None;
     }
-    
+
+    /**
+     * 	Set new mode. Clear continuation if the target mode is the DEFAULT_MODE.
+     */        
     private void _mode(int mode) {
         _mode(mode, null);
     }
-        
-    private void _mode(int newmode, Cont cont) {
+    
+    /**
+     * 	Set new mode and submode. Clear continuation if the target mode is the DEFAULT_MODE.
+     */    
+ 	private void _mode(int newmode, Cont cont) {
         if (L.isTraceEnabled()) {
             L.trace("Mode {}=>{}", this._mode, newmode);
         }
@@ -65,12 +72,15 @@ import org.slf4j.LoggerFactory;
                     L.trace("Continuation type: {}.", cont);
                 }
             }            
-        } else if (_mode == DEFAULT_MODE && this.cont != Cont.None) {
-            this.cont = Cont.None;
-            
-            if (L.isTraceEnabled()) {
-                L.trace("Exit continuation.");
-            }            
+        } else {
+        	// preserve continuation mode unless target mode is the default mode
+        	if (_mode == DEFAULT_MODE && this.cont != Cont.None) {
+		        this.cont = Cont.None;
+		        
+		        if (L.isTraceEnabled()) {
+		            L.trace("Exit continuation.");
+		        }            
+		    }
         }
         
         mode(newmode);        
