@@ -19,6 +19,9 @@ hs_err_pid*
 bin/
 target/
 
+#intellij idea
+.idea/
+
 # gradle
 .gradle
 build/

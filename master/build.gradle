@@ -1,4 +1,5 @@
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'base'
 
 version = '0.0.1-SNAPSHOT'
@@ -21,6 +22,7 @@ configure(subprojects.findAll()) {
     apply plugin: 'eclipse'
     apply plugin: 'osgi'
     apply plugin: 'maven'
+    apply plugin: 'idea'
 
     dependencies {
 		compile 'org.slf4j:slf4j-api:1.7.21'
