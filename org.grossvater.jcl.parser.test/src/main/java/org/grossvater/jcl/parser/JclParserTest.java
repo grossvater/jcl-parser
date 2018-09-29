@@ -23,33 +23,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JclParserTest {
-	private static Logger L = LoggerFactory.getLogger(JclParserTest.class);
-	
-	@Test
-	public void testEmpty() {
-		parse("empty", "/*", null, JclParser.RULE_unit,
-			  "");
-	}
-	
-	@Test
-	public void testRecord1() {
-		parse("record1", "/*", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_unit,
-			  "//ptest myproc");
-	}
-	
-	@Test
-	public void testRecord2() {
-		parse("record2", "/*", "<FIELD_ID><FIELD_OP>", JclParser.RULE_unit,
-			  "// myproc");
-	}
-	
-	private void parse(String testName, String xpath, String expr, int rule, String...lines) {
-		try (Reader r = TestUtils.makeReader(lines)) {
-		
-			L.info("Test {}", testName);
-			AntlrUtils.match(r, xpath, expr != null ? new String[] { expr } : null, rule, null);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private static Logger L = LoggerFactory.getLogger(JclParserTest.class);
+    
+    @Test
+    public void testEmpty() {
+        parse("empty", "/*", null, JclParser.RULE_unit,
+              "");
+    }
+    
+    @Test
+    public void testRecord1() {
+        parse("record1", "/*", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_unit,
+              "//ptest myproc");
+    }
+    
+    @Test
+    public void testRecord2() {
+        parse("record2", "/*", "<FIELD_ID><FIELD_OP>", JclParser.RULE_unit,
+              "// myproc");
+    }
+    
+    private void parse(String testName, String xpath, String expr, int rule, String...lines) {
+        try (Reader r = TestUtils.makeReader(lines)) {
+        
+            L.info("Test {}", testName);
+            AntlrUtils.match(r, xpath, expr != null ? new String[] { expr } : null, rule, null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

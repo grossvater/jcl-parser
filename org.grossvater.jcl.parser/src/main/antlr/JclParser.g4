@@ -25,32 +25,32 @@ import org.slf4j.LoggerFactory;
 }
 
 @members {
-	private Logger L = LoggerFactory.getLogger(this.getClass());
-	
-	private JclParserOpts opts;
-	
-	public JclParser(TokenStream input, JclParserOpts opts) {
-		this(input);
-		
-		this.opts = opts != null ? opts 
-							     : JclParserOpts.newBuilder().build();
-	}
+    private Logger L = LoggerFactory.getLogger(this.getClass());
+    
+    private JclParserOpts opts;
+    
+    public JclParser(TokenStream input, JclParserOpts opts) {
+        this(input);
+        
+        this.opts = opts != null ? opts 
+                                 : JclParserOpts.newBuilder().build();
+    }
 }
 unit: record*
 ;
 
 record:
-	FIELD_ID FIELD_NAME? FIELD_OP posParams? kwParams?
+    FIELD_ID FIELD_NAME? FIELD_OP posParams? kwParams?
 ;
 
 posParams:
-	PARAM_TOKEN (COMMA PARAM_TOKEN)*
+    PARAM_TOKEN (COMMA PARAM_TOKEN)*
 ;
 
 kwParams:
-	kwParam (COMMA kwParam)*
+    kwParam (COMMA kwParam)*
 ;
 
 kwParam:
-	PARAM_TOKEN EQ PARAM_TOKEN
+    PARAM_TOKEN EQ PARAM_TOKEN
 ;

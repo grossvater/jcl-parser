@@ -25,23 +25,23 @@ configure(subprojects.findAll()) {
     apply plugin: 'idea'
 
     dependencies {
-		compile 'org.slf4j:slf4j-api:1.7.21'
+        compile 'org.slf4j:slf4j-api:1.7.21'
     }
 
     afterEvaluate {
         jar {
-    	    manifest { m ->
-    	    	m.symbolicName = project.name
-	        	m.version = project.version
+            manifest { m ->
+                m.symbolicName = project.name
+                m.version = project.version
             }
         }
         
-		uploadArchives {
-		    repositories {
-		        mavenDeployer {
-		        }
-		    }
-		}
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                }
+            }
+        }
     }
 }
 
@@ -50,23 +50,23 @@ configure(subprojects.findAll { it.name == 'org.grossvater.jcl.parser' }) {
     apply plugin: 'antlr'
 
     dependencies {
-		compile (
-			'org.antlr:antlr4:4.7.1',
-			'org.antlr:antlr4-runtime:4.7.1'
-		)
-		
-    	antlr (
-        	'org.antlr:antlr4:4.7.1'
-    	)
+        compile (
+            'org.antlr:antlr4:4.7.1',
+            'org.antlr:antlr4-runtime:4.7.1'
+        )
+        
+        antlr (
+            'org.antlr:antlr4:4.7.1'
+        )
     }
 }
 
 // all test projects
 configure(subprojects.findAll { it.name.endsWith('.test') }) { 
     dependencies {
-		compile (
-			'junit:junit:4.12',
-			'org.slf4j:slf4j-log4j12:1.7.12'
-		)
+        compile (
+            'junit:junit:4.12',
+            'org.slf4j:slf4j-log4j12:1.7.12'
+        )
     }
 }

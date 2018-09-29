@@ -3,11 +3,11 @@ package org.grossvater.jcl.parser;
 import org.junit.Test;
 
 public class JclMultiLineLexer {
-	@Test
-	public void testSingleFieldId() {
-		AntlrUtils.match("//\n//", new int[] { JclLexer.FIELD_ID, JclLexer.NL, JclLexer.FIELD_ID });
-	}
-	
+    @Test
+    public void testSingleFieldId() {
+        AntlrUtils.match("//\n//", new int[] { JclLexer.FIELD_ID, JclLexer.NL, JclLexer.FIELD_ID });
+    }
+    
    @Test
     public void testName() {
         AntlrUtils.match("//XXX\n//XXX", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.NL,

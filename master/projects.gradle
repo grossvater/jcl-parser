@@ -1,4 +1,4 @@
 ext.projects = [
-	'org.grossvater.jcl.parser',
-	'org.grossvater.jcl.parser.test'
+    'org.grossvater.jcl.parser',
+    'org.grossvater.jcl.parser.test'
 ]
