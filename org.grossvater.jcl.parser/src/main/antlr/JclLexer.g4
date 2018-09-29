@@ -85,19 +85,34 @@ import org.slf4j.LoggerFactory;
         
         mode(newmode);        
     }
+    
+    private void syntaxError(String msg) {
+    	String text = _input.getText(Interval.of(_tokenStartCharIndex, _input.index()));
+		String displayMsg = "Lexical error: '" + msg + "' at '" + getErrorDisplay(text) + "'.";
+		ANTLRErrorListener listener = getErrorListenerDispatch();
+		
+		listener.syntaxError(this, null, _tokenStartLine, _tokenStartCharPositionInLine, displayMsg, null);
+	}
+	
+    private void lookAheadSyntaxError(String msg) {
+        String text = _input.getText(Interval.of(_tokenStartCharIndex, _input.index()));
+		String displayMsg = "Lexical error: '" + msg + "' after '" + getErrorDisplay(text) + "'.";
+		ANTLRErrorListener listener = getErrorListenerDispatch();
+		
+		listener.syntaxError(this, null, _tokenStartLine, _tokenStartCharPositionInLine, displayMsg, null);
+	}
 }
 
 fragment
 F_BLANK: [ \t]+
 ;
 
-FIELD_ID: '//' { 
+FIELD_ID: '//' {
     if (this.cont != Cont.None) {
         if (_input.LA(1) == ' ') {
             _mode(MODE_CONT_EAT_SPACE, this.cont);
         } else {
-            // TODO: use a message logger
-            System.err.println("Broken continuation line.");
+            lookAheadSyntaxError("Continuation line must start with '// '");
             _mode(MODE_NAME);
         }
     } else {
@@ -108,7 +123,7 @@ FIELD_ID: '//' {
 
 FIELD_INSTREAM_DELIM: '/*' { 
     if (this.cont != Cont.None) {
-        System.err.println("Broken continuation line.");
+        syntaxError("Instream data not allowed, continuation line expected");
     }
     
     _mode(MODE_INSTREAM_DELIM);
@@ -117,7 +132,7 @@ FIELD_INSTREAM_DELIM: '/*' {
 
 FIELD_COMMENT: '//*' {
     if (cont != Cont.None && cont != Cont.Param) {
-        System.err.println("Broken continuation line.");
+        syntaxError("Comment not allowed, continuation line expected");
     }
          
     _mode(MODE_COMMENT);
