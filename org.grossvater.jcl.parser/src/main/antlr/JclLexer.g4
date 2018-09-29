@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
     private Logger L = LoggerFactory.getLogger(this.getClass());
     
     private JclParserOpts opts;
-    private Cont submode = Cont.None;
+    private Cont cont = Cont.None;
     
     private enum Cont {
         None,
@@ -45,31 +45,31 @@ import org.slf4j.LoggerFactory;
     @Override
     public void reset() {
         super.reset();
-        this.submode = Cont.None;
+        this.cont = Cont.None;
     }
     
     private void _mode(int mode) {
         _mode(mode, null);
     }
         
-    private void _mode(int newmode, Cont submode) {
+    private void _mode(int newmode, Cont cont) {
         if (L.isTraceEnabled()) {
             L.trace("Mode {}=>{}", this._mode, newmode);
         }
         
-        if (submode != null) {
-            if (this.submode != submode) {
-                this.submode = submode;
+        if (cont != null) {
+            if (this.cont != cont) {
+                this.cont = cont;
                 
                 if (L.isTraceEnabled()) {
-                    L.trace("Submode: {}.", submode);
+                    L.trace("Continuation type: {}.", cont);
                 }
             }            
-        } else if (_mode == DEFAULT_MODE && this.submode != Cont.None) {
-            this.submode = Cont.None;
+        } else if (_mode == DEFAULT_MODE && this.cont != Cont.None) {
+            this.cont = Cont.None;
             
             if (L.isTraceEnabled()) {
-                L.trace("Exit cont mode.");
+                L.trace("Exit continuation.");
             }            
         }
         
@@ -82,9 +82,9 @@ F_BLANK: [ \t]+
 ;
 
 FIELD_ID: '//' { 
-    if (this.submode != Cont.None) {
+    if (this.cont != Cont.None) {
         if (_input.LA(1) == ' ') {
-            _mode(MODE_CONT_EAT_SPACE, this.submode);
+            _mode(MODE_CONT_EAT_SPACE, this.cont);
         } else {
             // TODO: use a message logger
             System.err.println("Broken continuation line.");
@@ -97,7 +97,7 @@ FIELD_ID: '//' {
 ;
 
 FIELD_INSTREAM_DELIM: '/*' { 
-    if (this.submode != Cont.None) {
+    if (this.cont != Cont.None) {
         System.err.println("Broken continuation line.");
     }
     
@@ -106,7 +106,7 @@ FIELD_INSTREAM_DELIM: '/*' {
 ;
 
 FIELD_COMMENT: '//*' {
-    if (submode != Cont.None && submode != Cont.Param) {
+    if (cont != Cont.None && cont != Cont.Param) {
         System.err.println("Broken continuation line.");
     }
          
@@ -178,17 +178,17 @@ PARAM_STRING_TOKEN: '\'' (~(['] | [\r\n]) | '\'\'')*? '\''
 
 PARAM_STRING_START_TOKEN: '\'' (~([\r\n] | '\'') | '\'\'')* {
     // set in advance, then new line will make the transition to default mode
-    this.submode = Cont.String;    
+    this.cont = Cont.String;    
 }
 ;
 
-PARAM_STRING_END_TOKEN: {this.submode == Cont.String}? (~([\r\n] | '\'') | '\'\'')* '\'' {
-    this.submode = Cont.None; 
+PARAM_STRING_END_TOKEN: {this.cont == Cont.String}? (~([\r\n] | '\'') | '\'\'')* '\'' {
+    this.cont = Cont.None; 
 }
 ;
 
-PARAM_STRING_MIDDLE_TOKEN: {this.submode == Cont.String}? (~([\r\n] | '\'') | '\'\'')*
-    // still keep String submode    
+PARAM_STRING_MIDDLE_TOKEN: {this.cont == Cont.String}? (~([\r\n] | '\'') | '\'\'')*
+    // still keep String continuation mode    
 ;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
@@ -227,17 +227,17 @@ mode MODE_CONT_EAT_SPACE;
 // but we don't care about the upper limit
 CONT_EAT_SPACE_BLANK: F_BLANK { 
     int mode = DEFAULT_MODE;
-    Cont submode = Cont.None;
+    Cont cont = Cont.None;
     
-    if (this.submode == Cont.Comment) {
+    if (this.cont == Cont.Comment) {
         mode = MODE_COMMENT;
-    } else if (this.submode == Cont.Param) {
+    } else if (this.cont == Cont.Param) {
         mode = MODE_PARAM;
-    } else if (this.submode == Cont.String) {
+    } else if (this.cont == Cont.String) {
         mode = MODE_PARAM;
-        submode = Cont.String;
+        cont = Cont.String;
     }
     
-    _mode(mode, submode);
+    _mode(mode, cont);
 } -> channel(HIDDEN), type(BLANK)
 ;
