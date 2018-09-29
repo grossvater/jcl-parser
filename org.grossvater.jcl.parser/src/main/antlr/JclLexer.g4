@@ -202,10 +202,10 @@ PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' { _mode(DEFAULT_MODE, Cont.P
 	-> channel(HIDDEN), type(NL)
 ;
 
-PARAM_BANK: F_BLANK { _mode(MODE_ND_LINE_COMMENT); } -> type(BLANK)
+PARAM_BLANK: F_BLANK { _mode(MODE_END_LINE_COMMENT); } -> type(BLANK)
 ;
 
-mode MODE_ND_LINE_COMMENT;
+mode MODE_END_LINE_COMMENT;
 
 END_LINE_COMMENT: ~[\n\r]+ {
 	String t = getText();
