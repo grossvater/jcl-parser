@@ -14,3 +14,18 @@ eclipse.classpath.file {
                                   *.path = 'target/generated-src/antlr/main'
     }
 }
+
+idea.module.iml {
+    whenMerged {
+        def newSourceDirs = sourceFolders.collect { entry ->
+            if (entry.url.contains('build/generated-src/antlr/main')) {
+                pathFactory.path('file://$MODULE_DIR$/target/generated-src/antlr/main')
+            } else {
+                entry
+            }
+        }
+
+        sourceFolders.clear()
+        sourceFolders.addAll(newSourceDirs)
+    }
+}
