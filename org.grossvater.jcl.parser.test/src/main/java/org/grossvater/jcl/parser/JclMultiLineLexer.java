@@ -30,8 +30,8 @@ public class JclMultiLineLexer {
    
    @Test
    public void testEndComment() {
-       AntlrUtils.match("//X Y A COMM\n//X", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
+       AntlrUtils.match("//X Y A COMM\n// X", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
                                                          JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.BLANK, JclLexer.COMMENT, JclLexer.NL,
-                                                         JclLexer.FIELD_ID, JclLexer.FIELD_NAME });
+                                                         JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.COMMENT });
    }
 }
