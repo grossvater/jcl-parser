@@ -59,6 +59,7 @@ posParamList:
 
 posParam:
 	PARAM_TOKEN
+	| paramString
 	|
 ;
 
@@ -76,4 +77,8 @@ kwParam:
 
 kwParamValue:
 	PARAM_TOKEN (EQ+ PARAM_TOKEN)*
+;
+
+paramString:
+	PARAM_STRING_TOKEN
 ;

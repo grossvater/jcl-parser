@@ -38,6 +38,12 @@ public class JclParamsTest {
         parse("//posParam", new String[] { "<posParam>", "<posParam>" }, JclParser.RULE_posParam,
               "//XXX YYY ,B");        
     }
+
+    @Test
+    public void testPosStringParam() {
+        parse("//posParam", new String[] { "<posParam>", "<posParam>" }, JclParser.RULE_posParam,
+              "//XXX YYY A,'B'");        
+    }
     
     @Test
     public void testEmptyPosAndKw() {
