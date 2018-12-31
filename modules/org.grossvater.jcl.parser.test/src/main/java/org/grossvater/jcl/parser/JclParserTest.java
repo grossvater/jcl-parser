@@ -33,14 +33,22 @@ public class JclParserTest {
     
     @Test
     public void testRecord1() {
-        parse("record1", "/*", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_unit,
+        parse("record1", "//records", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_records,
               "//ptest myproc");
     }
     
     @Test
     public void testRecord2() {
-        parse("record2", "/*", "<FIELD_ID><FIELD_OP>", JclParser.RULE_unit,
+        parse("record2", "//records", "<FIELD_ID><FIELD_OP>", JclParser.RULE_records,
               "// myproc");
+    }
+
+    @Test
+    public void testKwParamOdd() {
+        parse("kwParam", "//kwParam", "<PARAM_TOKEN>", JclParser.RULE_kwParam,
+              "//XXX YYY A=B=C");        
+        parse("kwParam", "//kwParamValue", "<PARAM_TOKEN><EQ><PARAM_TOKEN>", JclParser.RULE_kwParamValue,
+              "//XXX YYY A=B=C");
     }
     
     private void parse(String testName, String xpath, String expr, int rule, String...lines) {

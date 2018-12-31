@@ -36,21 +36,34 @@ import org.slf4j.LoggerFactory;
                                  : JclParserOpts.newBuilder().build();
     }
 }
-unit: record*
+
+unit: records EOF
+;
+
+records: 
+	record*
 ;
 
 record:
-    FIELD_ID FIELD_NAME? FIELD_OP posParams? kwParams?
+    FIELD_ID FIELD_NAME? FIELD_OP posParamList? kwParamList?
 ;
 
-posParams:
+posParamList:
     PARAM_TOKEN (COMMA PARAM_TOKEN)*
 ;
 
-kwParams:
-    kwParam (COMMA kwParam)*
+kwParamList:
+    kwParamExpr (COMMA kwParamExpr)*
+;
+
+kwParamExpr:
+    kwParam EQ kwParamValue
 ;
 
 kwParam:
-    PARAM_TOKEN EQ PARAM_TOKEN
+	PARAM_TOKEN
+;
+
+kwParamValue:
+	PARAM_TOKEN (EQ+ PARAM_TOKEN)*
 ;

@@ -181,7 +181,7 @@ mode MODE_OP;
 FIELD_OP: ~[ \t\n\r]+
 ;
 
-OP_BANK: F_BLANK { _mode(MODE_PARAM); } -> type(BLANK)
+OP_BANK: F_BLANK { _mode(MODE_PARAM); } -> channel(HIDDEN), type(BLANK)
 ;
 
 OP_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
@@ -230,7 +230,7 @@ PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' { _mode(DEFAULT_MODE, Cont.P
     -> channel(HIDDEN), type(NL)
 ;
 
-PARAM_BLANK: F_BLANK { _mode(MODE_END_LINE_COMMENT); } -> type(BLANK)
+PARAM_BLANK: F_BLANK { _mode(MODE_END_LINE_COMMENT); } -> channel(HIDDEN), type(BLANK)
 ;
 
 mode MODE_END_LINE_COMMENT;

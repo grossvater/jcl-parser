@@ -65,15 +65,14 @@ public class AntlrUtils {
         }
         
         lexer = new JclLexer(fs, opts);        
-        tokens = new CommonTokenStream(lexer);
-        L.debug("Tokens: {}", ParseUtils.toString(lexer.getAllTokens()));
-        
+        tokens = new CommonTokenStream(lexer);        
         parser = new JclParser(tokens, opts);
     
         lexer.addErrorListener(eh);        
         parser.addErrorListener(eh);
         
         tree = parser.unit();
+        L.debug("Tokens: {}", ParseUtils.toString(tokens.getTokens()));
         L.debug("Parse tree: {}", toStringTree(tree, parser));
 
         return new AntlrResult(tree, eh.errors, parser);
