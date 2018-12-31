@@ -5,6 +5,11 @@ import org.junit.Test;
 
 public class JclLexerTest {
     @Test
+    public void testEmpty() {
+        AntlrUtils.match("", new int[0]);
+    }
+
+    @Test
     public void testSingleFieldId() {
         AntlrUtils.match("//", new ExToken(JclLexer.FIELD_ID));
     }
