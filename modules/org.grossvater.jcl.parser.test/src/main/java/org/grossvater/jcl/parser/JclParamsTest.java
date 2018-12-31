@@ -38,13 +38,21 @@ public class JclParamsTest {
         parse("//posParam", new String[] { "<posParam>", "<posParam>" }, JclParser.RULE_posParam,
               "//XXX YYY ,B");        
     }
-
+    
     @Test
     public void testEmptyPosAndKw() {
         parse("//posParam", "<posParam>", JclParser.RULE_posParam,
               "//XXX YYY B,C=1");
         parse("//kwParamExpr", "<kwParamExpr>" , JclParser.RULE_kwParamExpr,
               "//XXX YYY B,C=1");                
+    }
+
+    @Test
+    public void testKwParam() {
+        parse("//kwParam", "<PARAM_TOKEN>", JclParser.RULE_kwParam,
+              "//XXX YYY A=B");        
+        parse("//kwParamValue", "<PARAM_TOKEN>", JclParser.RULE_kwParamValue,
+              "//XXX YYY A=B");
     }
     
     @Test
