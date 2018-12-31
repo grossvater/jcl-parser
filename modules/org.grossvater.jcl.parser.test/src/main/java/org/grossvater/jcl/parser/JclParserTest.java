@@ -19,12 +19,8 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JclParserTest {
-    private static Logger L = LoggerFactory.getLogger(JclParserTest.class);
-    
     @Test
     public void testEmpty() {
         parse("/*", null, JclParser.RULE_unit,
@@ -42,18 +38,9 @@ public class JclParserTest {
         parse("//records", "<FIELD_ID><FIELD_OP>", JclParser.RULE_records,
               "// myproc");
     }
-
-    @Test
-    public void testKwParamOdd() {
-        parse("//kwParam", "<PARAM_TOKEN>", JclParser.RULE_kwParam,
-              "//XXX YYY A=B=C");        
-        parse("//kwParamValue", "<PARAM_TOKEN><EQ><PARAM_TOKEN>", JclParser.RULE_kwParamValue,
-              "//XXX YYY A=B=C");
-    }
     
     private void parse(String xpath, String expr, int rule, String...lines) {
-        try (Reader r = TestUtils.makeReader(lines)) {
-        
+        try (Reader r = TestUtils.makeReader(lines)) {        
             AntlrUtils.match(r, xpath, expr != null ? new String[] { expr } : null, rule, null);
         } catch (IOException e) {
             throw new RuntimeException(e);

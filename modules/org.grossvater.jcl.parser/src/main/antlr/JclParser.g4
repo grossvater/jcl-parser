@@ -45,11 +45,16 @@ records:
 ;
 
 record:
-    FIELD_ID FIELD_NAME? FIELD_OP posParamList? kwParamList?
+    FIELD_ID FIELD_NAME? FIELD_OP posParamList? (COMMA kwParamList)?
 ;
 
 posParamList:
-    PARAM_TOKEN (COMMA PARAM_TOKEN)*
+    posParam (COMMA posParam)*
+;
+
+posParam:
+	PARAM_TOKEN
+	|
 ;
 
 kwParamList:
