@@ -64,8 +64,10 @@ public class AntlrUtils {
             throw new RuntimeException(e);
         }
         
-        lexer = new JclLexer(fs, opts);
+        lexer = new JclLexer(fs, opts);        
         tokens = new CommonTokenStream(lexer);
+        L.debug("Tokens: {}", ParseUtils.toString(lexer.getAllTokens()));
+        
         parser = new JclParser(tokens, opts);
     
         lexer.addErrorListener(eh);        
