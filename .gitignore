@@ -16,6 +16,7 @@ hs_err_pid*
 .classpath
 .metadata/
 .settings/
+.recommenders/
 bin/
 target/
 
