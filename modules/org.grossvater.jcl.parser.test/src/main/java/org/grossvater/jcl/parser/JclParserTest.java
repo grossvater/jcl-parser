@@ -27,34 +27,33 @@ public class JclParserTest {
     
     @Test
     public void testEmpty() {
-        parse("empty", "/*", null, JclParser.RULE_unit,
+        parse("/*", null, JclParser.RULE_unit,
               "");
     }
     
     @Test
     public void testRecord1() {
-        parse("record1", "//records", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_records,
+        parse("//records", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_records,
               "//ptest myproc");
     }
     
     @Test
     public void testRecord2() {
-        parse("record2", "//records", "<FIELD_ID><FIELD_OP>", JclParser.RULE_records,
+        parse("//records", "<FIELD_ID><FIELD_OP>", JclParser.RULE_records,
               "// myproc");
     }
 
     @Test
     public void testKwParamOdd() {
-        parse("kwParam", "//kwParam", "<PARAM_TOKEN>", JclParser.RULE_kwParam,
+        parse("//kwParam", "<PARAM_TOKEN>", JclParser.RULE_kwParam,
               "//XXX YYY A=B=C");        
-        parse("kwParam", "//kwParamValue", "<PARAM_TOKEN><EQ><PARAM_TOKEN>", JclParser.RULE_kwParamValue,
+        parse("//kwParamValue", "<PARAM_TOKEN><EQ><PARAM_TOKEN>", JclParser.RULE_kwParamValue,
               "//XXX YYY A=B=C");
     }
     
-    private void parse(String testName, String xpath, String expr, int rule, String...lines) {
+    private void parse(String xpath, String expr, int rule, String...lines) {
         try (Reader r = TestUtils.makeReader(lines)) {
         
-            L.info("Test {}", testName);
             AntlrUtils.match(r, xpath, expr != null ? new String[] { expr } : null, rule, null);
         } catch (IOException e) {
             throw new RuntimeException(e);
