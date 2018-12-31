@@ -8,11 +8,11 @@ public class ParseUtils {
     public static final int TOKEN_TS_F_NONE = 0;
     public static final int TOKEN_TS_F_NL_BEFORE = 1;
 
-    public static String toString(List<Token> tokens) {
+    public static String toString(List<? extends Token> tokens) {
         return toString(tokens, TOKEN_TS_F_NONE);
     }
     
-    public static String toString(List<Token> tokens, int flags) {
+    public static String toString(List<? extends Token> tokens, int flags) {
         StringBuffer b = new StringBuffer();
         
         if (tokens == null) {
