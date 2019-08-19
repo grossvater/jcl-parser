@@ -103,8 +103,8 @@ import org.slf4j.LoggerFactory;
 	}
 }
 
-/* Field type detection mode (ANTLR default mode, no declaration needed */
-/* mode DEFAULT_MODE; */
+/* Identifier field detection mode (ANTLR default mode, no declaration needed */
+/* mode MODE_FIELD, aka DEFAULT_MODE; */
 
 fragment
 F_BLANK: [ \t]+
