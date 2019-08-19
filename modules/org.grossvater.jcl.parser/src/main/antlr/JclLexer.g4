@@ -181,7 +181,7 @@ mode MODE_OP;
 FIELD_OP: ~[ \t\n\r]+
 ;
 
-OP_BANK: F_BLANK { _mode(MODE_PARAM); } -> channel(HIDDEN), type(BLANK)
+OP_BLANK: F_BLANK { _mode(MODE_PARAM); } -> channel(HIDDEN), type(BLANK)
 ;
 
 OP_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
