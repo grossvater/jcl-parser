@@ -29,13 +29,6 @@ public class JclLexerTest {
         AntlrUtils.match("/*", new int[] { JclLexer.FIELD_INSTREAM_DELIM });
     }
 
-    // TODO: fix me
-    @Test
-    @Ignore
-    public void testDelimiter() {
-        AntlrUtils.match("/*XXX", new int[] { JclLexer.FIELD_INSTREAM_DELIM, JclLexer.COMMENT });
-    }
-
     @Test
     public void testDelimiterWithSpace() {
         AntlrUtils.match("/* XXX", new int[] { JclLexer.FIELD_INSTREAM_DELIM, JclLexer.BLANK, JclLexer.COMMENT });
