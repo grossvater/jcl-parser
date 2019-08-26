@@ -57,7 +57,8 @@ import org.slf4j.LoggerFactory;
     }
     
     /**
-     * 	Set new mode and submode. Clear continuation if the target mode is the DEFAULT_MODE.
+     * 	Set new mode and submode. If the continuation parameter is not provided,
+     * clear continuation if the target mode is the DEFAULT_MODE.
      */    
  	private void _mode(int newmode, Cont cont) {
         if (L.isTraceEnabled()) {
@@ -138,7 +139,7 @@ FIELD_COMMENT: '//*' {
         syntaxError("Comment not allowed, continuation line expected");
     }
          
-    _mode(MODE_COMMENT);
+    _mode(MODE_COMMENT, this.cont);
 }
 ;
 
@@ -162,7 +163,7 @@ mode MODE_COMMENT;
 COMMENT: ~[\n]+
 ;
 
-COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> type(NL)
+COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE, this.cont); } -> type(NL)
 ;
 
 mode MODE_INSTREAM_DELIM;

@@ -1,5 +1,6 @@
 package org.grossvater.jcl.parser;
 
+import static org.grossvater.jcl.parser.LineUtils.lines;
 import org.junit.Test;
 
 public class JclContLineLexer {
@@ -9,8 +10,20 @@ public class JclContLineLexer {
                                                           JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.COMMA, JclLexer.NL, 
                                                           JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.PARAM_TOKEN });
    }
-   
-   @Test
+
+    @Test
+    public void testPosParamWithComment() {
+        AntlrUtils.match(lines(
+                    "//XXX YYY A,",
+                    "//* COMMENT",
+                    "// B"),
+                new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
+                JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.COMMA, JclLexer.NL,
+                JclLexer.FIELD_COMMENT, JclLexer.COMMENT, JclLexer.NL,
+                JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.PARAM_TOKEN });
+    }
+
+    @Test
    public void testKwParam() {
        AntlrUtils.match("//XXX YYY B=,\n// C=", 
                         new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP, JclLexer.BLANK, 
