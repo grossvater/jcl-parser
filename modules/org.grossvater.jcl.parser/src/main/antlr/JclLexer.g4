@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
      * clear continuation if the current mode is the DEFAULT_MODE.
      */    
  	private final void _mode(int newmode, Cont cont) {
-        L.trace("Mode {}=>{}", this._mode, newmode);
+        L.trace("Mode {}=>{}", this.modeNames[this._mode], this.modeNames[newmode]);
 
         if (cont != null) {
             if (this.cont != cont) {
