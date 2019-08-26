@@ -2,7 +2,7 @@ package org.grossvater.jcl.parser;
 
 import org.junit.Test;
 
-public class JcContLineLexer {
+public class JclContLineLexer {
    @Test
    public void testPosParam() {
        AntlrUtils.match("//XXX YYY A,\n// B", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
