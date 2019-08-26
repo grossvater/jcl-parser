@@ -27,6 +27,17 @@ import org.slf4j.LoggerFactory;
     private Logger L = LoggerFactory.getLogger(this.getClass());
     
     private JclParserOpts opts;
+
+    /**
+     *  Parameters, comments and strings may be continued on the next line. Continuation submode is entered by calling
+     * {@see #_submode(Cont)} or {@see #_mode(int, Cont)}. In the last case, subsequent calls with continuation
+     * argument null will preserve the continuation submode.
+     * <p>
+     *  The submode is exited by explicitly entering another continuation submode (via <code>_submode(newcont)</code>)
+     * or when exiting DEFAULT_MODE by calling
+     * <code>_mode(newmode, null)</code> or <code>_mode(newmode)</code>.
+     * </p>
+     */
     private Cont cont = Cont.None;
     
     private enum Cont {
@@ -52,41 +63,46 @@ import org.slf4j.LoggerFactory;
     /**
      * 	Set new mode. Clear continuation if the target mode is the DEFAULT_MODE.
      */        
-    private void _mode(int mode) {
+    private final void _mode(int mode) {
         _mode(mode, null);
     }
     
     /**
      * 	Set new mode and submode. If the continuation parameter is not provided,
-     * clear continuation if the target mode is the DEFAULT_MODE.
+     * clear continuation if the current mode is the DEFAULT_MODE.
      */    
- 	private void _mode(int newmode, Cont cont) {
-        if (L.isTraceEnabled()) {
-            L.trace("Mode {}=>{}", this._mode, newmode);
-        }
-        
+ 	private final void _mode(int newmode, Cont cont) {
+        L.trace("Mode {}=>{}", this._mode, newmode);
+
         if (cont != null) {
             if (this.cont != cont) {
                 this.cont = cont;
-                
-                if (L.isTraceEnabled()) {
-                    L.trace("Continuation type: {}.", cont);
-                }
+                L.trace("Continuation type: {}.", cont);
             }            
         } else {
-        	// preserve continuation mode unless target mode is the default mode
+        	// preserve continuation mode unless current mode is the default mode
         	if (_mode == DEFAULT_MODE && this.cont != Cont.None) {
 		        this.cont = Cont.None;
-		        
-		        if (L.isTraceEnabled()) {
-		            L.trace("Exit continuation.");
-		        }            
+		        L.trace("Exit continuation.");
 		    }
         }
         
         mode(newmode);        
     }
-    
+
+    private final void _submode(Cont cont) {
+        if (this.cont != cont) {
+            if (cont == null) {
+                this.cont = Cont.None;
+                L.trace("Exit continuation.");
+            } else {
+                L.trace("Continuation type: {}.", cont);
+            }
+        }
+
+        this.cont = cont;
+    }
+
     private void syntaxError(String msg) {
     	String text = _input.getText(Interval.of(_tokenStartCharIndex, _input.index()));
 		String displayMsg = "Lexical error: '" + msg + "' at '" + getErrorDisplay(text) + "'.";
@@ -207,12 +223,12 @@ PARAM_STRING_TOKEN: '\'' (~(['] | [\r\n]) | '\'\'')*? '\''
 
 PARAM_STRING_START_TOKEN: '\'' (~([\r\n] | '\'') | '\'\'')* {
     // set in advance, then new line will make the transition to default mode
-    this.cont = Cont.String;    
+    _submode(Cont.String);
 }
 ;
 
 PARAM_STRING_END_TOKEN: {this.cont == Cont.String}? (~([\r\n] | '\'') | '\'\'')* '\'' {
-    this.cont = Cont.None; 
+    _submode(Cont.None);
 }
 ;
 
