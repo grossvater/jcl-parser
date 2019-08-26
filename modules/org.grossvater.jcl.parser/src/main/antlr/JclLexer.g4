@@ -77,13 +77,13 @@ import org.slf4j.LoggerFactory;
         if (cont != null) {
             if (this.cont != cont) {
                 this.cont = cont;
-                L.trace("Continuation type: {}.", cont);
+                L.trace("Continuation type: {}", cont);
             }            
         } else {
         	// preserve continuation mode unless current mode is the default mode
         	if (_mode == DEFAULT_MODE && this.cont != Cont.None) {
 		        this.cont = Cont.None;
-		        L.trace("Exit continuation.");
+		        L.trace("Exit continuation");
 		    }
         }
         
@@ -94,9 +94,9 @@ import org.slf4j.LoggerFactory;
         if (this.cont != cont) {
             if (cont == null) {
                 this.cont = Cont.None;
-                L.trace("Exit continuation.");
+                L.trace("Exit continuation");
             } else {
-                L.trace("Continuation type: {}.", cont);
+                L.trace("Continuation type: {}", cont);
             }
         }
 
