@@ -46,6 +46,7 @@ records:
 
 record:
     FIELD_ID FIELD_NAME? FIELD_OP params?
+    | FIELD_ID FIELD_NAME? FIELD_OP params comment?
 ;
 
 params:
@@ -94,4 +95,8 @@ string:
 
 multilineString:
     PARAM_STRING_START_TOKEN (FIELD_ID PARAM_STRING_MIDDLE_TOKEN)* FIELD_ID PARAM_STRING_END_TOKEN
+;
+
+comment:
+    COMMENT
 ;
