@@ -19,6 +19,8 @@ public class JclParserOptsBuilder {
         JclParserOpts r = this.opts;
         
         r = this.opts;
+        this.opts = null;
+
         return r;
     }
     
