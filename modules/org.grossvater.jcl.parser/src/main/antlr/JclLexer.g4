@@ -176,11 +176,23 @@ NAME_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;
 
 mode MODE_COMMENT;
-COMMENT: ~[\n]+
+COMMENT: ~[\r\n]+
 ;
 
-COMMENT_NL: '\r'? '\n' { _mode(DEFAULT_MODE, this.cont); } -> type(NL)
+COMMENT_NL: {getInterpreter().getCharPositionInLine() <= 72}? '\r'? '\n' { _mode(DEFAULT_MODE, this.cont); } -> type(NL)
 ;
+
+// standard says don't do it, though it doesn't say whether it is supported:
+//
+// "Do not continue a comment statement using continuation conventions. Instead, code
+// additional comment statements."
+/*
+COMMENT_NL_CONT: {getInterpreter().getCharPositionInLine() > 72}? '\r'? '\n'
+    // if already in continuation, keep the submode
+    { _mode(DEFAULT_MODE, this.cont != Cont.None ? this.cont : Cont.Comment); }
+    -> channel(HIDDEN), type(NL)
+;
+*/
 
 mode MODE_INSTREAM_DELIM;
 DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* { _mode(DEFAULT_MODE); } -> type(COMMENT)
