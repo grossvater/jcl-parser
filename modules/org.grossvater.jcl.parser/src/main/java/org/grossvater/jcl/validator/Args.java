@@ -1,6 +1,12 @@
 package org.grossvater.jcl.validator;
 
 public class Args {
+    public static void check(boolean cond, String msg) {
+        if (!cond) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
     public static void notNull(Object arg, String argName) {
         if (argName == null) {
             throw new IllegalArgumentException(String.format("'%s' may not be null", argName));
