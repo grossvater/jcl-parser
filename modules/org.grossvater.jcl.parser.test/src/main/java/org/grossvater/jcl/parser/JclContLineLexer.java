@@ -3,6 +3,8 @@ package org.grossvater.jcl.parser;
 import static org.grossvater.jcl.parser.LineUtils.lines;
 import org.junit.Test;
 
+import static org.grossvater.jcl.parser.TestUtils.marginOpts;
+
 public class JclContLineLexer {
    @Test
    public void testPosParam() {
@@ -33,10 +35,13 @@ public class JclContLineLexer {
    
    @Test
    public void testEndLineComment() {
-       AntlrUtils.match("//XXX YYY A,B HELLO\n// WORLD", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
+       AntlrUtils.match(lines("//XXX YYY A,B HELLO X",
+                              "// WORLD"
+                        ), new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
                                                           JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.COMMA, JclLexer.PARAM_TOKEN, 
                                                           JclLexer.BLANK, JclLexer.COMMENT, JclLexer.NL,
-                                                          JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.COMMENT});
+                                                          JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.COMMENT},
+                        marginOpts(21));
    }
    
    @Test

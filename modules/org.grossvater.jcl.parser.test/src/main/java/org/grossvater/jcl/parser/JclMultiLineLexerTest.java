@@ -40,10 +40,15 @@ public class JclMultiLineLexerTest {
    
    @Test
    public void testEndComment() {
-       AntlrUtils.match(lines("//X Y A COMM",
-                              "// X"
+       AntlrUtils.match(lines("//X Y A COMM X",
+                              "// ENT"
                         ), new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
                                                          JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.BLANK, JclLexer.COMMENT, JclLexer.NL,
-                                                         JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.COMMENT });
+                                                         JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.COMMENT },
+                        marginOpts(14));
+   }
+
+   private static JclParserOpts marginOpts(int rightMargin) {
+        return JclParserOpts.newBuilder().setRightMargin(rightMargin).build();
    }
 }

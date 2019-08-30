@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
         String
     }
 
-    private int rightMargin;
+    private int rightMargin = JclParserOpts.RIGHT_MARGIN_DEFAULT;
 
     public JclLexer(CharStream input, JclParserOpts opts) {
         this(input);
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
                                  : JclParserOpts.newBuilder().build();
         this.rightMargin = this.opts.getRightMargin();
     }
-    
+
     @Override
     public void reset() {
         super.reset();
@@ -272,9 +272,8 @@ PARAM_BLANK: F_BLANK { _mode(MODE_END_LINE_COMMENT); } -> channel(HIDDEN), type(
 mode MODE_END_LINE_COMMENT;
 
 END_LINE_COMMENT: ~[\n\r]+ {
-    String t = getText();
-     
-    if (t.charAt(t.length() - 1) == ' ') {
+    L.trace("{} {}", getInterpreter().getCharPositionInLine(), this.rightMargin);
+    if (getInterpreter().getCharPositionInLine() < this.rightMargin) {
         _mode(DEFAULT_MODE);
     } else {
         _mode(DEFAULT_MODE, Cont.Comment);

@@ -92,10 +92,14 @@ public class AntlrUtils {
         Assert.assertEquals(0, el.errors);
         assertEquals(tokens, expected);
     }
-    
-    @SuppressWarnings("unchecked")
+
     public static void match(String content, int[] expected) {
-        JclLexer l = new JclLexer(CharStreams.fromString(content));
+        match(content, expected, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void match(String content, int[] expected, JclParserOpts opts) {
+        JclLexer l = new JclLexer(CharStreams.fromString(content), opts);
         List<Token> tokens;
         ErrorListener el = new ErrorListener();
         

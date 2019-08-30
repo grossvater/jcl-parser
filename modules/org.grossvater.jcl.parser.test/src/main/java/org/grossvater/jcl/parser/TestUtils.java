@@ -83,4 +83,8 @@ public class TestUtils {
             i++;
         }
     }
+
+    public static JclParserOpts marginOpts(int rightMargin) {
+        return JclParserOpts.newBuilder().setRightMargin(rightMargin).build();
+    }
 }
