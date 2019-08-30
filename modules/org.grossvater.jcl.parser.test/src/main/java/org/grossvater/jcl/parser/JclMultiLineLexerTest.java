@@ -2,7 +2,7 @@ package org.grossvater.jcl.parser;
 
 import org.junit.Test;
 
-public class JclMultiLineLexer {
+public class JclMultiLineLexerTest {
     @Test
     public void testSingleFieldId() {
         AntlrUtils.match("//\n//", new int[] { JclLexer.FIELD_ID, JclLexer.NL, JclLexer.FIELD_ID });
