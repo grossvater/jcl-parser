@@ -20,7 +20,7 @@ import java.io.Reader;
 
 import org.junit.Test;
 
-public class JclParamsTest {
+public class JclParserParamsTest {
     @Test
     public void testPosParam() {
         parse("//posParam", new String[] { "<posParam>", "<posParam>" }, JclParser.RULE_posParam,

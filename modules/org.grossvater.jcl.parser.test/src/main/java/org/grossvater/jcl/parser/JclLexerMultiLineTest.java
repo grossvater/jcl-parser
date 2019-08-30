@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.grossvater.jcl.parser.LineUtils.lines;
 import static org.grossvater.jcl.parser.TestUtils.marginOpts;
 
-public class JclMultiLineLexerTest {
+public class JclLexerMultiLineTest {
     @Test
     public void testSingleFieldId() {
         AntlrUtils.match(lines("//",
