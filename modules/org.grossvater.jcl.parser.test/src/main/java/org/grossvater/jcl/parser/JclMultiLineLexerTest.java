@@ -3,6 +3,7 @@ package org.grossvater.jcl.parser;
 import org.junit.Test;
 
 import static org.grossvater.jcl.parser.LineUtils.lines;
+import static org.grossvater.jcl.parser.TestUtils.marginOpts;
 
 public class JclMultiLineLexerTest {
     @Test
@@ -46,9 +47,5 @@ public class JclMultiLineLexerTest {
                                                          JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.BLANK, JclLexer.COMMENT, JclLexer.NL,
                                                          JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.COMMENT },
                         marginOpts(14));
-   }
-
-   private static JclParserOpts marginOpts(int rightMargin) {
-        return JclParserOpts.newBuilder().setRightMargin(rightMargin).build();
    }
 }
