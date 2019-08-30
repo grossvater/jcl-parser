@@ -20,6 +20,8 @@ import java.io.Reader;
 
 import org.junit.Test;
 
+import static org.grossvater.jcl.parser.LineUtils.lines;
+
 public class JclParserTest {
     @Test
     public void testEmpty() {
@@ -28,17 +30,46 @@ public class JclParserTest {
     }
     
     @Test
-    public void testRecord1() {
+    public void testOp() {
         parse("//records", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_records,
-              "//ptest myproc");
+              "//test proc");
     }
     
     @Test
-    public void testRecord2() {
+    public void testNoNameOp() {
         parse("//records", "<FIELD_ID><FIELD_OP>", JclParser.RULE_records,
-              "// myproc");
+              "// proc");
     }
-    
+
+    @Test
+    public void testPosTokenParam() {
+        parse("/unit/records/record/params", "<token>", JclParser.RULE_params,
+                "//test proc a");
+    }
+
+    @Test
+    public void testPosStringParam() {
+        parse("/unit/records/record/params", "<string>", JclParser.RULE_params,
+                "//test proc 'a'");
+    }
+
+    @Test
+    public void testPosMultilineStringParam() {
+        parse("/unit/records/record/params", "<multilineString>", JclParser.RULE_params,
+              lines("//test proc 'a",
+                    "// b'"
+              ));
+    }
+
+    @Test
+    public void testPosMultilineMiddleStringParam() {
+        parse("/unit/records/record/params", "<multilineString>", JclParser.RULE_params,
+                lines("//test proc 'a",
+                      "// b",
+                      "// c'"
+                ));
+    }
+
     private void parse(String xpath, String expr, int rule, String...lines) {
         try (Reader r = TestUtils.makeReader(lines)) {        
             AntlrUtils.match(r, xpath, expr != null ? new String[] { expr } : null, rule, null);

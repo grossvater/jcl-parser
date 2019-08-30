@@ -58,7 +58,7 @@ posParamList:
 ;
 
 posParam:
-	PARAM_TOKEN
+	token
 	| paramString
 	|
 ;
@@ -72,13 +72,26 @@ kwParamExpr:
 ;
 
 kwParam:
-	PARAM_TOKEN
+	token
 ;
 
 kwParamValue:
-	PARAM_TOKEN (EQ+ PARAM_TOKEN)*
+	token (EQ+ token)*
 ;
 
 paramString:
+    string
+    | multilineString
+;
+
+token:
+    PARAM_TOKEN
+;
+
+string:
 	PARAM_STRING_TOKEN
+;
+
+multilineString:
+    PARAM_STRING_START_TOKEN (FIELD_ID PARAM_STRING_MIDDLE_TOKEN)* FIELD_ID PARAM_STRING_END_TOKEN
 ;
