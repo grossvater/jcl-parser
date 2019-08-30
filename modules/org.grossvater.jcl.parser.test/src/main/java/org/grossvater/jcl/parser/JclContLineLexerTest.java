@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.grossvater.jcl.parser.TestUtils.marginOpts;
 
-public class JclContLineLexer {
+public class JclContLineLexerTest {
    @Test
    public void testPosParam() {
        AntlrUtils.match("//XXX YYY A,\n// B", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
