@@ -26,6 +26,16 @@ configure(subprojects.findAll()) {
     dependencies {
         compile 'org.slf4j:slf4j-api:1.7.21'
     }
+
+    idea {
+        module {
+            // if you hate browsing Javadoc
+            downloadJavadoc = true
+
+            // and love reading sources :)
+            downloadSources = true
+        }
+    }
 }
 
 // parser projects
