@@ -20,34 +20,18 @@ subprojects {
 configure(subprojects.findAll()) { 
     apply plugin: 'java'
     apply plugin: 'eclipse'
-    apply plugin: 'osgi'
     apply plugin: 'maven'
     apply plugin: 'idea'
 
     dependencies {
         compile 'org.slf4j:slf4j-api:1.7.21'
     }
-
-    afterEvaluate {
-        jar {
-            manifest { m ->
-                m.symbolicName = project.name
-                m.version = project.version
-            }
-        }
-        
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                }
-            }
-        }
-    }
 }
 
 // parser projects
 configure(subprojects.findAll { it.name == 'org.grossvater.jcl.parser' }) { 
     apply plugin: 'antlr'
+    apply plugin: 'osgi'
 
     dependencies {
         compile (
@@ -70,3 +54,25 @@ configure(subprojects.findAll { it.name.endsWith('.test') }) {
         )
     }
 }
+
+// all non test projects
+configure(subprojects.findAll { !it.name.endsWith('.test') }) {
+    afterEvaluate {
+        jar {
+            manifest { m ->
+                m.symbolicName = project.name
+                m.version = project.version
+            }
+        }
+
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                }
+            }
+        }
+    }
+}
+
+
+
