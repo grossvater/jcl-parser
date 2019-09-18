@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-lexer grammar JclLexer;
+lexer grammar JclBaseLexer;
+
+tokens {
+    FIELD_INSTREAM_DELIM
+}
 
 @header {
 package org.grossvater.jcl.parser;
@@ -49,24 +53,48 @@ import org.slf4j.LoggerFactory;
 
     private int rightMargin = JclParserOpts.RIGHT_MARGIN_DEFAULT;
 
-    public JclLexer(CharStream input, JclParserOpts opts) {
+    /* BEGIN MODE_INSTREAM_DATA */
+    public static final String INSTREAM_DELIM_DEFAULT = "/*";
+
+    protected String delimiter = INSTREAM_DELIM_DEFAULT;
+    protected boolean jclBreaksInstream = false;
+
+    public void setInstreamDelimiter(String delimiter) {
+        if (delimiter == null || delimiter.length() == 0) {
+            throw new IllegalArgumentException("delimiter");
+        }
+
+        this.delimiter = delimiter;
+    }
+    /* END MODE_INSTREAM_DATA */
+
+    public JclBaseLexer(CharStream input, JclParserOpts opts) {
+        this(input, opts, INSTREAM_DELIM_DEFAULT, DEFAULT_MODE);
+    }
+
+    public JclBaseLexer(CharStream input, JclParserOpts opts, String delimiter, int mode) {
         this(input);
         
-        this.opts = opts != null ? opts 
-                                 : JclParserOpts.newBuilder().build();
+        this.opts = opts != null ? opts : JclParserOpts.newBuilder().build();
         this.rightMargin = this.opts.getRightMargin();
+        this.delimiter = delimiter == null ? INSTREAM_DELIM_DEFAULT : delimiter;
+
+        _mode(mode);
     }
 
     @Override
     public void reset() {
         super.reset();
+
         this.cont = Cont.None;
+        this.delimiter = INSTREAM_DELIM_DEFAULT;
+        this.jclBreaksInstream = false;
     }
 
     /**
      * 	Set new mode. Clear continuation if the target mode is the DEFAULT_MODE.
      */        
-    private final void _mode(int mode) {
+    protected final void _mode(int mode) {
         _mode(mode, null);
     }
     
@@ -74,7 +102,7 @@ import org.slf4j.LoggerFactory;
      * 	Set new mode and submode. If the continuation parameter is not provided,
      * clear continuation if the current mode is the DEFAULT_MODE.
      */    
- 	private final void _mode(int newmode, Cont cont) {
+ 	protected final void _mode(int newmode, Cont cont) {
         L.trace("Mode {}=>{}", this.modeNames[this._mode], this.modeNames[newmode]);
 
         if (cont != null) {
@@ -121,6 +149,10 @@ import org.slf4j.LoggerFactory;
 		
 		listener.syntaxError(this, null, _tokenStartLine, _tokenStartCharPositionInLine, displayMsg, null);
 	}
+
+	private boolean isPosition(int pos, String pred) {
+	    return getInterpreter().getCharPositionInLine() == pos;
+	}
 }
 
 /* Identifier field detection mode (ANTLR default mode, no declaration needed */
@@ -141,15 +173,6 @@ FIELD_ID: '//' {
     } else {
         _mode(MODE_NAME);
     }
-}
-;
-
-FIELD_INSTREAM_DELIM: '/*' { 
-    if (this.cont != Cont.None) {
-        syntaxError("Instream data not allowed, continuation line expected");
-    }
-    
-    _mode(MODE_INSTREAM_DELIM);
 }
 ;
 
@@ -200,16 +223,6 @@ COMMENT_NL_CONT: {getInterpreter().getCharPositionInLine() > this.rightMargin}? 
     -> channel(HIDDEN), type(NL)
 ;
 */
-
-mode MODE_INSTREAM_DELIM;
-DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* { _mode(DEFAULT_MODE); } -> type(COMMENT)
-;
-
-DELIM_BLANK: {getInterpreter().getCharPositionInLine() == 2}? F_BLANK -> channel(HIDDEN), type(BLANK)
-;
-
-DELIM_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
-;
 
 mode MODE_OP;
 
@@ -272,7 +285,6 @@ PARAM_BLANK: F_BLANK { _mode(MODE_END_LINE_COMMENT); } -> channel(HIDDEN), type(
 mode MODE_END_LINE_COMMENT;
 
 END_LINE_COMMENT: ~[\n\r]+ {
-    L.trace("{} {}", getInterpreter().getCharPositionInLine(), this.rightMargin);
     if (getInterpreter().getCharPositionInLine() < this.rightMargin) {
         _mode(DEFAULT_MODE);
     } else {
@@ -303,4 +315,20 @@ CONT_EAT_SPACE_BLANK: F_BLANK {
     
     _mode(mode, cont);
 } -> channel(HIDDEN), type(BLANK)
+;
+
+mode MODE_INSTREAM_DATA;
+
+INSTREAM_DATA_LINE: {isPosition(0, "INSTREAM_DATA_LINE")}? ~[\r\n]+
+;
+
+mode MODE_INSTREAM_COMMENT;
+
+DELIM_COMMENT: {getInterpreter().getCharPositionInLine() > 2}? ~[\n\r]* { _mode(DEFAULT_MODE); } -> type(COMMENT)
+;
+
+DELIM_BLANK: {getInterpreter().getCharPositionInLine() == 2}? F_BLANK -> channel(HIDDEN), type(BLANK)
+;
+
+DELIM_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;

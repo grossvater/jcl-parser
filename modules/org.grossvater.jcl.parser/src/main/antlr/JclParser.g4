@@ -15,7 +15,7 @@
  */
 parser grammar JclParser;
 
-options { tokenVocab=JclLexer; }
+options { tokenVocab=JclBaseLexer; }
 
 @header {
 package org.grossvater.jcl.parser;

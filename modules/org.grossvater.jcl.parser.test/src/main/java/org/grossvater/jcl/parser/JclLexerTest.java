@@ -26,12 +26,13 @@ public class JclLexerTest {
 
     @Test
     public void testDelimiterEmpty() {
-        AntlrUtils.match("/*", new int[] { JclLexer.FIELD_INSTREAM_DELIM });
+        AntlrUtils.match("/*", new int[] { JclLexer.FIELD_INSTREAM_DELIM }, null, JclLexer.INSTREAM_DELIM_DEFAULT);
     }
 
     @Test
     public void testDelimiterWithSpace() {
-        AntlrUtils.match("/* XXX", new int[] { JclLexer.FIELD_INSTREAM_DELIM, JclLexer.BLANK, JclLexer.COMMENT });
+        AntlrUtils.match("/* XXX", new int[] { JclLexer.FIELD_INSTREAM_DELIM, JclLexer.BLANK, JclLexer.COMMENT },
+                         null, JclLexer.INSTREAM_DELIM_DEFAULT);
     }
     
     @Test

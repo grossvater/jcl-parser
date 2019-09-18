@@ -99,18 +99,25 @@ public class AntlrUtils {
 
     @SuppressWarnings("unchecked")
     public static void match(String content, int[] expected, JclParserOpts opts) {
-        JclLexer l = new JclLexer(CharStreams.fromString(content), opts);
+        match(content, expected, opts, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void match(String content, int[] expected, JclParserOpts opts, String delimiter) {
+        int mode = delimiter == null ? JclLexer.DEFAULT_MODE : JclLexer.MODE_INSTREAM_DATA;
+        JclLexer l = new JclLexer(CharStreams.fromString(content), opts,
+                delimiter != null ? delimiter : JclLexer.INSTREAM_DELIM_DEFAULT, mode);
         List<Token> tokens;
         ErrorListener el = new ErrorListener();
-        
+
         l.addErrorListener(el);
-        
+
         tokens = (List<Token>)l.getAllTokens();
         L.debug("Tokens: {}", ParseUtils.toString(tokens));
-        
+
         Assert.assertEquals(0, el.errors);
         assertEquals(tokens, expected);
-    }    
+    }
 
     public static void match(String content, ExToken expected) {
         match(content, new ExToken[] { expected });
