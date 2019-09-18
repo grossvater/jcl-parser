@@ -22,6 +22,8 @@ tokens {
 @header {
 package org.grossvater.jcl.parser;
 
+import java.util.Set;
+import java.util.HashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,20 +55,18 @@ import org.slf4j.LoggerFactory;
 
     private int rightMargin = JclParserOpts.RIGHT_MARGIN_DEFAULT;
 
-    /* BEGIN MODE_INSTREAM_DATA */
     public static final String INSTREAM_DELIM_DEFAULT = "/*";
 
     protected String delimiter = INSTREAM_DELIM_DEFAULT;
     protected boolean jclBreaksInstream = false;
 
-    public void setInstreamDelimiter(String delimiter) {
-        if (delimiter == null || delimiter.length() == 0) {
-            throw new IllegalArgumentException("delimiter");
-        }
-
-        this.delimiter = delimiter;
+    protected enum InstreamType {
+        None,
+        Jcl,
+        Raw
     }
-    /* END MODE_INSTREAM_DATA */
+
+    protected InstreamType instreamType = InstreamType.None;
 
     public JclBaseLexer(CharStream input, JclParserOpts opts) {
         this(input, opts, INSTREAM_DELIM_DEFAULT, DEFAULT_MODE);
@@ -74,7 +74,11 @@ import org.slf4j.LoggerFactory;
 
     public JclBaseLexer(CharStream input, JclParserOpts opts, String delimiter, int mode) {
         this(input);
-        
+
+        if (delimiter != null && delimiter.length() == 0) {
+            throw new IllegalArgumentException("delimiter");
+        }
+
         this.opts = opts != null ? opts : JclParserOpts.newBuilder().build();
         this.rightMargin = this.opts.getRightMargin();
         this.delimiter = delimiter == null ? INSTREAM_DELIM_DEFAULT : delimiter;
@@ -167,6 +171,7 @@ FIELD_ID: '//' {
         if (_input.LA(1) == ' ') {
             _mode(MODE_CONT_EAT_SPACE, this.cont);
         } else {
+            // TODO: test me
             lookAheadSyntaxError("Continuation line must start with '// '");
             _mode(MODE_NAME);
         }
