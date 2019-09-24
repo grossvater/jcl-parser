@@ -77,22 +77,12 @@ public class AntlrUtils {
 
         return new AntlrResult(tree, eh.errors, parser);
     }
-    
-    @SuppressWarnings("unchecked")
+
     public static void match(String content, ExToken[] expected) {
-        JclLexer l = new JclLexer(CharStreams.fromString(content));
-        List<Token> tokens;
-        ErrorListener el = new ErrorListener();
-        
-        l.addErrorListener(el);
-        
-        tokens = (List<Token>)l.getAllTokens();
-        L.debug("Tokens: {}", ParseUtils.toString(tokens));
-        
-        Assert.assertEquals(0, el.errors);
-        assertEquals(tokens, expected);
+        match(content, expected, null, null);
     }
 
+    @SuppressWarnings("unchecked")
     public static void match(String content, int[] expected) {
         match(content, expected, null);
     }
@@ -104,6 +94,22 @@ public class AntlrUtils {
 
     @SuppressWarnings("unchecked")
     public static void match(String content, int[] expected, JclParserOpts opts, String delimiter) {
+        int mode = delimiter == null ? JclLexer.DEFAULT_MODE : JclLexer.MODE_INSTREAM_DATA;
+        JclLexer l = new JclLexer(CharStreams.fromString(content), opts,
+                delimiter != null ? delimiter : JclLexer.INSTREAM_DELIM_DEFAULT, mode);
+        List<Token> tokens;
+        ErrorListener el = new ErrorListener();
+
+        l.addErrorListener(el);
+
+        tokens = (List<Token>)l.getAllTokens();
+        L.debug("Tokens: {}", ParseUtils.toString(tokens));
+
+        Assert.assertEquals(0, el.errors);
+        assertEquals(tokens, expected);
+    }
+
+    public static void match(String content, ExToken[] expected, JclParserOpts opts, String delimiter) {
         int mode = delimiter == null ? JclLexer.DEFAULT_MODE : JclLexer.MODE_INSTREAM_DATA;
         JclLexer l = new JclLexer(CharStreams.fromString(content), opts,
                 delimiter != null ? delimiter : JclLexer.INSTREAM_DELIM_DEFAULT, mode);

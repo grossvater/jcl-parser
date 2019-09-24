@@ -18,7 +18,7 @@ public class JclLexerInstreamTest {
 
     @Test
     public void testCustomDelimiter() {
-        AntlrUtils.match("AAA", new int[] { JclLexer.FIELD_INSTREAM_DELIM }, null, "AAA");
+        AntlrUtils.match("AAA", new ExToken[] { new ExToken(JclLexer.FIELD_INSTREAM_DELIM, "AAA") }, null, "AAA");
     }
 
     @Test
