@@ -6,6 +6,10 @@ import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.antlr.v4.runtime.Token;
 
 public class JclLexer extends JclBaseLexer {
+    public static final String PARAM_DLM_TEXT = "DLM";
+
+    private ParamDetector de = new ParamDetector(MODE_PARAM, PARAM_TOKEN, EQ, PARAM_DLM_TEXT);
+
     public JclLexer(CharStream input) {
         super(input);
     }
@@ -18,6 +22,9 @@ public class JclLexer extends JclBaseLexer {
         super(input, opts, delimiter, mode);
     }
 
+    /**
+     *  Based on {@link org.antlr.v4.runtime.Lexer#nextToken()}.
+     */
     @Override
     public Token nextToken() {
         if (_input == null) {
@@ -27,7 +34,7 @@ public class JclLexer extends JclBaseLexer {
         // Mark start location in char stream so unbuffered streams are
         // guaranteed at least have text of current token
         int tokenStartMarker = _input.mark();
-        try{
+        try {
             outer:
             while (true) {
                 if (_hitEOF) {
@@ -45,8 +52,8 @@ public class JclLexer extends JclBaseLexer {
                     _type = Token.INVALID_TYPE;
 
                     int ttype = -1;
-
                     boolean delimiterFound = false;
+
                     if (this._mode == MODE_INSTREAM_DATA
                             && _tokenStartCharPositionInLine == 0) {
                         delimiterFound = matchDelimiterAndAdvanceStream(this._input);
@@ -98,8 +105,18 @@ public class JclLexer extends JclBaseLexer {
                         _hitEOF = true;
                     }
                     if ( _type == Token.INVALID_TYPE ) _type = ttype;
+
                     if ( _type ==SKIP ) {
                         continue outer;
+                    }
+
+                    {
+                        // TODO: avoid calling getText() second time
+                        String re = this.de.input(this._mode, this._type, delimiterFound ? this.delimiter : getText());
+
+                        if (re != null) {
+                            this.delimiter = re;
+                        }
                     }
                 } while ( _type ==MORE );
                 if ( _token == null ) emit();

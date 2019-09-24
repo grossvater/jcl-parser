@@ -75,6 +75,7 @@ import org.slf4j.LoggerFactory;
 
     protected static final String PARAM_DD_STAR_TEXT = "*";
     protected static final String PARAM_DD_DATA_TEXT = "DATA";
+    protected static final String PARAM_DLM_TEXT = "DLM";
 
     protected String lastOp = null;
 
