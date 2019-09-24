@@ -55,6 +55,8 @@ public class JclLexer extends JclBaseLexer {
                             _interp.setCharPositionInLine(_tokenStartCharPositionInLine + this.delimiter.length());
 
                             ttype = FIELD_INSTREAM_DELIM;
+                            this.instreamType = InstreamType.None;
+
                             _mode(MODE_INSTREAM_COMMENT);
                         }
                     }
@@ -62,6 +64,29 @@ public class JclLexer extends JclBaseLexer {
                     if (!delimiterFound) {
                         try {
                             ttype = getInterpreter().match(_input, _mode);
+
+                            if (ttype == FIELD_OP) {
+                                this.lastOp = getText();
+
+                                if (this.lastOp.equals(OP_DD)) {
+                                    setType(FIELD_DD);
+                                } else if (this.lastOp.equals(OP_XMIT)) {
+                                    setType(FIELD_XMIT);
+                                }
+                            } else if (ttype == PARAM_TOKEN) {
+                                // TODO: check by type here
+                                if (this.lastOp.equals(OP_DD)) {
+                                    String text = getText();
+
+                                    if (text.equals(PARAM_DD_STAR_TEXT)) {
+                                        ttype = PARAM_DD_STAR;
+                                        this.instreamType = InstreamType.Raw;
+                                    } else if (text.equals(PARAM_DD_DATA_TEXT)) {
+                                        ttype = PARAM_DD_DATA;
+                                        this.instreamType = InstreamType.Jcl;
+                                    }
+                                }
+                            }
                         } catch (LexerNoViableAltException e) {
                             notifyListeners(e);        // report error
                             recover(e);
@@ -69,7 +94,7 @@ public class JclLexer extends JclBaseLexer {
                         }
                     }
 
-                    if ( _input.LA(1)==IntStream.EOF ) {
+                    if ( _input.LA(1) == IntStream.EOF ) {
                         _hitEOF = true;
                     }
                     if ( _type == Token.INVALID_TYPE ) _type = ttype;

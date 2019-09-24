@@ -16,14 +16,17 @@
 lexer grammar JclBaseLexer;
 
 tokens {
-    FIELD_INSTREAM_DELIM
+    FIELD_INSTREAM_DELIM,
+    FIELD_DD,
+    FIELD_XMIT,
+
+    PARAM_DD_DATA,
+    PARAM_DD_STAR
 }
 
 @header {
 package org.grossvater.jcl.parser;
 
-import java.util.Set;
-import java.util.HashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +61,6 @@ import org.slf4j.LoggerFactory;
     public static final String INSTREAM_DELIM_DEFAULT = "/*";
 
     protected String delimiter = INSTREAM_DELIM_DEFAULT;
-    protected boolean jclBreaksInstream = false;
 
     protected enum InstreamType {
         None,
@@ -67,6 +69,14 @@ import org.slf4j.LoggerFactory;
     }
 
     protected InstreamType instreamType = InstreamType.None;
+
+    protected static final String OP_DD = "DD";
+    protected static final String OP_XMIT = "XMIT";
+
+    protected static final String PARAM_DD_STAR_TEXT = "*";
+    protected static final String PARAM_DD_DATA_TEXT = "DATA";
+
+    protected String lastOp = null;
 
     public JclBaseLexer(CharStream input, JclParserOpts opts) {
         this(input, opts, INSTREAM_DELIM_DEFAULT, DEFAULT_MODE);
@@ -92,7 +102,6 @@ import org.slf4j.LoggerFactory;
 
         this.cont = Cont.None;
         this.delimiter = INSTREAM_DELIM_DEFAULT;
-        this.jclBreaksInstream = false;
     }
 
     /**
@@ -233,12 +242,29 @@ mode MODE_OP;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
 FIELD_OP: ~[ \t\n\r]+
+    {
+        this.lastOp = getText();
+
+        if (this.lastOp.equals(FIELD_DD)) {
+            setType(FIELD_DD);
+        } else if (this.lastOp.equals(FIELD_XMIT)) {
+            setType(FIELD_XMIT);
+        }
+    }
 ;
 
 OP_BLANK: F_BLANK { _mode(MODE_PARAM); } -> channel(HIDDEN), type(BLANK)
 ;
 
-OP_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
+OP_NL: '\r'? '\n'
+    {
+        if (this.instreamType != InstreamType.None) {
+            _mode(MODE_INSTREAM_DATA);
+        } else {
+            _mode(DEFAULT_MODE);
+        }
+    }
+    -> channel(HIDDEN), type(NL)
 ;
 
 mode MODE_PARAM;
@@ -277,7 +303,15 @@ PARAM_STRING_MIDDLE_TOKEN: {this.cont == Cont.String}? (~([\r\n] | '\'') | '\'\'
 PARAM_TOKEN: ~('\'' | '=' | [ \t\n\r] | ',' | '(' | ')') ~('=' | [ \t\n\r] | ',' | '(' | ')')*
 ;
  
-PARAM_NL: {_input.LA(-1) != ','}? '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
+PARAM_NL: {_input.LA(-1) != ','}? '\r'? '\n'
+    {
+        if (this.instreamType != InstreamType.None) {
+            _mode(MODE_INSTREAM_DATA);
+        } else {
+            _mode(DEFAULT_MODE);
+        }
+    }
+    -> channel(HIDDEN), type(NL)
 ;
 
 PARAM_CONT_LINE: {_input.LA(-1) == ','}? '\r'? '\n' { _mode(DEFAULT_MODE, Cont.Param); }
@@ -291,7 +325,11 @@ mode MODE_END_LINE_COMMENT;
 
 END_LINE_COMMENT: ~[\n\r]+ {
     if (getInterpreter().getCharPositionInLine() < this.rightMargin) {
-        _mode(DEFAULT_MODE);
+        if (this.instreamType != InstreamType.None) {
+            _mode(MODE_INSTREAM_DATA);
+        } else {
+            _mode(DEFAULT_MODE);
+        }
     } else {
         _mode(DEFAULT_MODE, Cont.Comment);
     }
@@ -310,6 +348,7 @@ CONT_EAT_SPACE_BLANK: F_BLANK {
     Cont cont = Cont.None;
     
     if (this.cont == Cont.Comment) {
+        // FIXME: should go in end line comment, comment statment can't be continued
         mode = MODE_COMMENT;
     } else if (this.cont == Cont.Param) {
         mode = MODE_PARAM;
@@ -325,6 +364,9 @@ CONT_EAT_SPACE_BLANK: F_BLANK {
 mode MODE_INSTREAM_DATA;
 
 INSTREAM_DATA_LINE: {isPosition(0, "INSTREAM_DATA_LINE")}? ~[\r\n]+
+;
+
+INSTREAM_NL: '\r'? '\n' -> type(NL)
 ;
 
 mode MODE_INSTREAM_COMMENT;

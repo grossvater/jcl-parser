@@ -43,19 +43,19 @@ public class JclParserTest {
 
     @Test
     public void testPosTokenParam() {
-        parse("/unit/records/record/params", "<token>", JclParser.RULE_params,
+        parse("/unit/records/record/operation/params", "<token>", JclParser.RULE_params,
                 "//test proc a");
     }
 
     @Test
     public void testPosStringParam() {
-        parse("/unit/records/record/params", "<string>", JclParser.RULE_params,
+        parse("/unit/records/record/operation/params", "<string>", JclParser.RULE_params,
                 "//test proc 'a'");
     }
 
     @Test
     public void testPosMultilineStringParam() {
-        parse("/unit/records/record/params", "<multilineString>", JclParser.RULE_params,
+        parse("/unit/records/record/operation/params", "<multilineString>", JclParser.RULE_params,
               lines("//test proc 'a",
                     "// b'"
               ));
@@ -63,10 +63,19 @@ public class JclParserTest {
 
     @Test
     public void testPosMultilineMiddleStringParam() {
-        parse("/unit/records/record/params", "<multilineString>", JclParser.RULE_params,
+        parse("/unit/records/record/operation/params", "<multilineString>", JclParser.RULE_params,
                 lines("//test proc 'a",
                       "// b",
                       "// c'"
+                ));
+    }
+
+    @Test
+    public void testInstreamOperation() {
+        parse("/unit/records/record/instreamOperation", "<instreamOperation>", JclParser.RULE_instreamOperation,
+                lines("// DD *",
+                        "text",
+                        "/*"
                 ));
     }
 

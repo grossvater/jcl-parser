@@ -45,8 +45,34 @@ records:
 ;
 
 record:
-    FIELD_ID FIELD_NAME? FIELD_OP params?
-    | FIELD_ID FIELD_NAME? FIELD_OP params comment?
+    FIELD_ID FIELD_NAME? operation
+    | FIELD_ID FIELD_NAME? instreamOperation
+;
+
+operation:
+    FIELD_OP params?
+    | FIELD_OP params comment?
+;
+
+instreamOperation:
+    instreamHeader instreamBody? instreamEnd
+;
+
+instreamHeader:
+    instreamOp params?
+    | instreamOp params comment?
+;
+
+instreamOp:
+    (FIELD_XMIT | FIELD_DD) (PARAM_DD_STAR | PARAM_DD_DATA)?
+;
+
+instreamBody:
+    (INSTREAM_DATA_LINE | NL)+
+;
+
+instreamEnd:
+    FIELD_INSTREAM_DELIM COMMENT?
 ;
 
 params:
@@ -86,7 +112,7 @@ paramString:
 ;
 
 token:
-    PARAM_TOKEN
+    PARAM_TOKEN | PARAM_DD_STAR | PARAM_DD_DATA
 ;
 
 string:
