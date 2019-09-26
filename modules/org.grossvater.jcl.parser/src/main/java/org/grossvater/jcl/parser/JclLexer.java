@@ -79,18 +79,20 @@ public class JclLexer extends JclBaseLexer {
                                     setType(FIELD_DD);
                                 } else if (this.lastOp.equals(OP_XMIT)) {
                                     setType(FIELD_XMIT);
+                                    this.instreamType = InstreamType.Raw;
                                 }
                             } else if (ttype == PARAM_TOKEN) {
                                 // TODO: check by type here
+                                // for XMIT, instream type is always raw
                                 if (this.lastOp.equals(OP_DD)) {
                                     String text = getText();
 
                                     if (text.equals(PARAM_DD_STAR_TEXT)) {
                                         ttype = PARAM_DD_STAR;
-                                        this.instreamType = InstreamType.Raw;
+                                        this.instreamType = InstreamType.Standard;
                                     } else if (text.equals(PARAM_DD_DATA_TEXT)) {
                                         ttype = PARAM_DD_DATA;
-                                        this.instreamType = InstreamType.Jcl;
+                                        this.instreamType = InstreamType.Raw;
                                     }
                                 }
                             }

@@ -64,7 +64,11 @@ import org.slf4j.LoggerFactory;
 
     protected enum InstreamType {
         None,
-        Jcl,
+
+        // JCL statements terminate the instream (DD *)
+        Standard,
+
+        // JCL statements don't terminates the instream (DD DATA & XMIT)
         Raw
     }
 
@@ -364,7 +368,15 @@ CONT_EAT_SPACE_BLANK: F_BLANK {
 
 mode MODE_INSTREAM_DATA;
 
-INSTREAM_DATA_LINE: {isPosition(0, "INSTREAM_DATA_LINE")}? ~[\r\n]+
+INSTREAM_JCL: {isPosition(0, "INSTREAM_JCL") && this.instreamType == InstreamType.Standard}? '//'
+    { _mode(MODE_NAME); } -> type(FIELD_ID)
+;
+
+INSTREAM_NON_JCL: {isPosition(0, "INSTREAM_NON_JCL") && this.instreamType != InstreamType.Standard}? '//' ~[\r\n]*
+    -> type(INSTREAM_DATA_LINE)
+;
+
+INSTREAM_DATA_LINE: {isPosition(0, "INSTREAM_DATA_LINE")}? '/'? ~'/' ~[\r\n]+
 ;
 
 INSTREAM_NL: '\r'? '\n' -> type(NL)

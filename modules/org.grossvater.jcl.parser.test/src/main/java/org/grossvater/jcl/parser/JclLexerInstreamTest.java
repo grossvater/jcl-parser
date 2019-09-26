@@ -30,6 +30,14 @@ public class JclLexerInstreamTest {
     }
 
     @Test
+    public void testDdStarJcl() {
+        AntlrUtils.match(lines("// DD *", "free text", "// CMD"),
+                new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_DD, JclLexer.BLANK, JclLexer.PARAM_DD_STAR, JclLexer.NL,
+                        JclLexer.INSTREAM_DATA_LINE, JclLexer.NL,
+                        JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_OP });
+    }
+
+    @Test
     public void testDdCustomDelimiter() {
         AntlrUtils.match(lines("// DD *,DLM=XXX", "free text", "XXX"),
                 new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.FIELD_DD, JclLexer.BLANK, JclLexer.PARAM_DD_STAR,
