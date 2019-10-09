@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import static org.grossvater.jcl.parser.LineUtils.lines;
 
-public class JclParserTest {
+public class JclParserGenericTest {
     @Test
     public void testEmpty() {
         parse("/*", null, JclParser.RULE_unit,
