@@ -48,6 +48,7 @@ record:
     FIELD_ID FIELD_NAME? operation
     | FIELD_ID FIELD_NAME? instreamOperation
     | ifStmt
+    | nullStmt
 ;
 
 operation:
@@ -175,4 +176,8 @@ logOp: AND_OP | OR_OP
 
 exprToken:
     EXPR_TOKEN (EXPR_DOT EXPR_TOKEN)*
+;
+
+nullStmt:
+    FIELD_ID
 ;

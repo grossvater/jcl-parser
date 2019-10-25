@@ -28,7 +28,13 @@ public class JclParserGenericTest {
         parse("/*", null, JclParser.RULE_unit,
               "");
     }
-    
+
+    @Test
+    public void testNull() {
+        parse("/*", null, JclParser.RULE_unit,
+                "// ");
+    }
+
     @Test
     public void testOp() {
         parse("//records", "<FIELD_ID><FIELD_NAME><FIELD_OP>", JclParser.RULE_records,
