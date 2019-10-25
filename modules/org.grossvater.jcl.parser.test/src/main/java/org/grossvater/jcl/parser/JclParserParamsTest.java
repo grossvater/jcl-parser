@@ -65,7 +65,7 @@ public class JclParserParamsTest {
     public void testKwParamOdd() {
         parse("//kwParam", "<PARAM_TOKEN>", JclParser.RULE_kwParam,
               "//XXX YYY A=B=C");        
-        parse("//kwParamValue", "<PARAM_TOKEN><EQ><PARAM_TOKEN>", JclParser.RULE_kwParamValue,
+        parse("//kwParamValue", "<PARAM_TOKEN><ASSIGN><PARAM_TOKEN>", JclParser.RULE_kwParamValue,
               "//XXX YYY A=B=C");
     }
     

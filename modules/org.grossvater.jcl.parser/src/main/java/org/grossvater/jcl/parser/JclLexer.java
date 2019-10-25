@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.Token;
 public class JclLexer extends JclBaseLexer {
     public static final String PARAM_DLM_TEXT = "DLM";
 
-    private ParamDetector de = new ParamDetector(MODE_PARAM, PARAM_TOKEN, EQ, PARAM_DLM_TEXT);
+    private ParamDetector de = new ParamDetector(MODE_PARAM, PARAM_TOKEN, ASSIGN, PARAM_DLM_TEXT);
 
     public JclLexer(CharStream input) {
         super(input);

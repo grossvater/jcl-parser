@@ -49,7 +49,7 @@ public class JclLexerInstreamTest {
     public void testDdCustomDelimiter() {
         AntlrUtils.match(lines("// DD *,DLM=XXX", "free text", "XXX"),
                 new int[] { JclLexer.FIELD_ID, JclLexer.BLANK, JclLexer.OP_DD, JclLexer.BLANK, JclLexer.PARAM_DD_STAR,
-                                JclLexer.COMMA, JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN, JclLexer.NL,
+                                JclLexer.COMMA, JclLexer.PARAM_TOKEN, JclLexer.ASSIGN, JclLexer.PARAM_TOKEN, JclLexer.NL,
                             JclLexer.INSTREAM_DATA_LINE, JclLexer.NL,
                             JclLexer.FIELD_INSTREAM_DELIM });
     }

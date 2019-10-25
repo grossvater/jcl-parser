@@ -61,35 +61,35 @@ public class JclLexerTest {
     @Test
     public void testKwParam() {
         AntlrUtils.match("//XXX YYY A=B", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
-                                                      JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN });
+                                                      JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.ASSIGN, JclLexer.PARAM_TOKEN });
     }
 
     @Test
     public void testKwEmptyParam() {
         AntlrUtils.match("//XXX YYY A=", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
-                                                     JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.EQ });
+                                                     JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.ASSIGN });
     }
 
     @Test
     public void testKwEmptyParam2() {
         AntlrUtils.match("//XXX YYY Z,A=", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
                                                        JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.COMMA,
-                                                       JclLexer.PARAM_TOKEN, JclLexer.EQ });
+                                                       JclLexer.PARAM_TOKEN, JclLexer.ASSIGN });
     }
 
     @Test
     public void testKwEmptyParam3() {
         AntlrUtils.match("//XXX YYY A=,Z", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
-                                                       JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.EQ, 
+                                                       JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.ASSIGN,
                                                        JclLexer.COMMA, JclLexer.PARAM_TOKEN });
     }
 
     @Test
     public void testKwParams() {
         AntlrUtils.match("//XXX YYY A=B,X=Y", new int[] { JclLexer.FIELD_ID, JclLexer.FIELD_NAME, JclLexer.BLANK, JclLexer.FIELD_OP,
-                                                          JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN,
+                                                          JclLexer.BLANK, JclLexer.PARAM_TOKEN, JclLexer.ASSIGN, JclLexer.PARAM_TOKEN,
                                                           JclLexer.COMMA, 
-                                                          JclLexer.PARAM_TOKEN, JclLexer.EQ, JclLexer.PARAM_TOKEN });
+                                                          JclLexer.PARAM_TOKEN, JclLexer.ASSIGN, JclLexer.PARAM_TOKEN });
     }
     
     @Test

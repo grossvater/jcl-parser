@@ -97,7 +97,7 @@ kwParamList:
 ;
 
 kwParamExpr:
-    kwParam EQ kwParamValue
+    kwParam ASSIGN kwParamValue
 ;
 
 kwParam:
@@ -105,7 +105,7 @@ kwParam:
 ;
 
 kwParamValue:
-	token (EQ+ token)*
+	token (ASSIGN+ token)*
 ;
 
 paramString:
@@ -160,7 +160,7 @@ expr:
     | exprToken
     | NOT_OP expr
     | expr op expr
-    | EXPR_LP expr EXPT_RP
+    | EXPR_LP expr EXPR_RP
 ;
 
 op:
