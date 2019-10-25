@@ -47,6 +47,7 @@ records:
 record:
     FIELD_ID FIELD_NAME? operation
     | FIELD_ID FIELD_NAME? instreamOperation
+    | FIELD_ID FIELD_NAME? ifStmt
 ;
 
 operation:
@@ -64,7 +65,7 @@ instreamHeader:
 ;
 
 instreamOp:
-    (FIELD_XMIT | FIELD_DD) (PARAM_DD_STAR | PARAM_DD_DATA)?
+    (OP_XMIT | OP_DD) (PARAM_DD_STAR | PARAM_DD_DATA)?
 ;
 
 instreamBody:
@@ -125,4 +126,39 @@ multilineString:
 
 comment:
     COMMENT
+;
+
+ifStmt:
+    ifHeader ifBody
+;
+
+ifHeader:
+    OP_IF expr THEN comment?
+;
+
+ifBody:
+    records
+;
+
+expr:
+    NUMBER
+    | exprToken
+    | NOT_OP expr
+    | expr op expr
+    | EXPR_LP expr EXPT_RP
+;
+
+op:
+    compOp
+    | logOp
+;
+
+compOp: GT_OP | LT_OP | NG_OP | NL_OP | EQ_OP | NE_OP | GE_OP | LE_OP
+;
+
+logOp: AND_OP | OR_OP
+;
+
+exprToken:
+    EXPR_TOKEN (EXPR_DOT EXPR_TOKEN)*
 ;

@@ -54,6 +54,7 @@ public class JclLexer extends JclBaseLexer {
                     int ttype = -1;
                     boolean delimiterFound = false;
 
+                    // TODO: check why looking ahead and moving the input index doesn't work in base parser
                     if (this._mode == MODE_INSTREAM_DATA
                             && _tokenStartCharPositionInLine == 0) {
                         delimiterFound = matchDelimiterAndAdvanceStream(this._input);
@@ -72,19 +73,24 @@ public class JclLexer extends JclBaseLexer {
                         try {
                             ttype = getInterpreter().match(_input, _mode);
 
+                            // TODO: move this to base lexer maybe?
                             if (ttype == FIELD_OP) {
                                 this.lastOp = getText();
 
-                                if (this.lastOp.equals(OP_DD)) {
-                                    setType(FIELD_DD);
-                                } else if (this.lastOp.equals(OP_XMIT)) {
-                                    setType(FIELD_XMIT);
+                                if (this.lastOp.equals(OP_DD_TEXT)) {
+                                    setType(OP_DD);
+                                } else if (this.lastOp.equals(OP_XMIT_TEXT)) {
+                                    setType(OP_XMIT);
                                     this.instreamType = InstreamType.Raw;
+                                } else if (this.lastOp.equals(OP_IF_TEXT)) {
+                                    setType(OP_IF);
+
+                                    _mode(MODE_IF);
                                 }
                             } else if (ttype == PARAM_TOKEN) {
                                 // TODO: check by type here
                                 // for XMIT, instream type is always raw
-                                if (this.lastOp.equals(OP_DD)) {
+                                if (this.lastOp.equals(OP_DD_TEXT)) {
                                     String text = getText();
 
                                     if (text.equals(PARAM_DD_STAR_TEXT)) {

@@ -17,8 +17,10 @@ lexer grammar JclBaseLexer;
 
 tokens {
     FIELD_INSTREAM_DELIM,
-    FIELD_DD,
-    FIELD_XMIT,
+
+    OP_DD,
+    OP_XMIT,
+    OP_IF,
 
     PARAM_DD_DATA,
     PARAM_DD_STAR
@@ -74,8 +76,9 @@ import org.slf4j.LoggerFactory;
 
     protected InstreamType instreamType = InstreamType.None;
 
-    protected static final String OP_DD = "DD";
-    protected static final String OP_XMIT = "XMIT";
+    protected static final String OP_IF_TEXT = "IF";
+    protected static final String OP_DD_TEXT = "DD";
+    protected static final String OP_XMIT_TEXT = "XMIT";
 
     protected static final String PARAM_DD_STAR_TEXT = "*";
     protected static final String PARAM_DD_DATA_TEXT = "DATA";
@@ -247,15 +250,6 @@ mode MODE_OP;
 
 // can't avoid symbol duplication, ANTLR doesn't allow token reference in a set
 FIELD_OP: ~[ \t\n\r]+
-    {
-        this.lastOp = getText();
-
-        if (this.lastOp.equals(FIELD_DD)) {
-            setType(FIELD_DD);
-        } else if (this.lastOp.equals(FIELD_XMIT)) {
-            setType(FIELD_XMIT);
-        }
-    }
 ;
 
 OP_BLANK: F_BLANK { _mode(MODE_PARAM); } -> channel(HIDDEN), type(BLANK)
@@ -391,4 +385,72 @@ DELIM_BLANK: {getInterpreter().getCharPositionInLine() == 2}? F_BLANK -> channel
 ;
 
 DELIM_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
+;
+
+mode MODE_IF;
+
+THEN: 'THEN'
+    {
+        if (_input.LA(1) == '\r' || _input.LA(1) == '\n') {
+            _mode(MODE_IF_EAT_NL);
+        } else {
+            _mode(MODE_END_LINE_COMMENT);
+        }
+    }
+;
+
+IF_BLANK: F_BLANK -> channel(HIDDEN), type(BLANK)
+;
+
+EXPR_TOKEN: [a-zA-Z_$#@] [a-zA-Z_$#@0-9]+
+;
+
+EXPR_DOT: '.'
+;
+
+NOT_OP: 'NOT' | '¬'
+;
+
+GT_OP: 'GT' | '>'
+;
+
+LT_OP: 'LT' | '<'
+;
+
+NG_OP: 'NG' | '¬>'
+;
+
+NL_OP: 'NL' | '¬<'
+;
+
+EQ_OP: 'EQ' | '='
+;
+
+NE_OP: 'NE' | '¬='
+;
+
+GE_OP: 'GE' | '>='
+;
+
+LE_OP: 'LE' | '<='
+;
+
+AND_OP: 'AND' | '&'
+;
+
+OR_OP: 'OR' | '|'
+;
+
+NUMBER: [0-9]+
+;
+
+EXPR_LP: '('
+;
+
+EXPR_RP: ')'
+;
+
+mode MODE_IF_EAT_NL;
+
+IF_EAT_NL: '\r'? '\n' { _mode(DEFAULT_MODE); } -> channel(HIDDEN), type(NL)
 ;

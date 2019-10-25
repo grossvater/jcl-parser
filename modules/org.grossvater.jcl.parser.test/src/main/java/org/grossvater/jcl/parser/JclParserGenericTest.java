@@ -79,6 +79,14 @@ public class JclParserGenericTest {
                 ));
     }
 
+    @Test
+    public void testIfSimple() {
+        parse("/unit/records/record/ifStmt", "<ifStmt>", JclParser.RULE_ifStmt,
+                lines("// IF CODE THEN          JUMP TO TEST",
+                      "// EXEC PROC=TEST"
+                ));
+    }
+
     private void parse(String xpath, String expr, int rule, String...lines) {
         try (Reader r = TestUtils.makeReader(lines)) {        
             AntlrUtils.match(r, xpath, expr != null ? new String[] { expr } : null, rule, null);
