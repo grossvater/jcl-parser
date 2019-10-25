@@ -21,6 +21,8 @@ tokens {
     OP_DD,
     OP_XMIT,
     OP_IF,
+    OP_ELSE,
+    OP_ENDIF,
 
     PARAM_DD_DATA,
     PARAM_DD_STAR
@@ -77,6 +79,8 @@ import org.slf4j.LoggerFactory;
     protected InstreamType instreamType = InstreamType.None;
 
     protected static final String OP_IF_TEXT = "IF";
+    protected static final String OP_ELSE_TEXT = "ELSE";
+    protected static final String OP_ENDIF_TEXT = "ENDIF";
     protected static final String OP_DD_TEXT = "DD";
     protected static final String OP_XMIT_TEXT = "XMIT";
 

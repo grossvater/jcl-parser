@@ -84,8 +84,13 @@ public class JclLexer extends JclBaseLexer {
                                     this.instreamType = InstreamType.Raw;
                                 } else if (this.lastOp.equals(OP_IF_TEXT)) {
                                     setType(OP_IF);
-
                                     _mode(MODE_IF);
+                                } else if (this.lastOp.equals(OP_ELSE_TEXT)) {
+                                    setType(OP_ELSE);
+                                    _mode(MODE_END_LINE_COMMENT);
+                                } else if (this.lastOp.equals(OP_ENDIF_TEXT)) {
+                                    setType(OP_ENDIF);
+                                    _mode(MODE_END_LINE_COMMENT);
                                 }
                             } else if (ttype == PARAM_TOKEN) {
                                 // TODO: check by type here

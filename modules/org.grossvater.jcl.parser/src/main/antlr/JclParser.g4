@@ -47,7 +47,7 @@ records:
 record:
     FIELD_ID FIELD_NAME? operation
     | FIELD_ID FIELD_NAME? instreamOperation
-    | FIELD_ID FIELD_NAME? ifStmt
+    | ifStmt
 ;
 
 operation:
@@ -130,14 +130,28 @@ comment:
 
 ifStmt:
     ifHeader ifBody
+    elseStmt?
+    endIf
 ;
 
 ifHeader:
-    OP_IF expr THEN comment?
+    FIELD_ID FIELD_NAME? OP_IF expr THEN comment?
 ;
 
 ifBody:
     records
+;
+
+elseStmt:
+    elseHeader ifBody
+;
+
+elseHeader:
+    FIELD_ID FIELD_NAME? OP_ELSE comment?
+;
+
+endIf:
+    FIELD_ID FIELD_NAME? OP_ENDIF comment?
 ;
 
 expr:

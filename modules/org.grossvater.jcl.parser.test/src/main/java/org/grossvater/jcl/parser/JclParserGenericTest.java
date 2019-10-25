@@ -83,7 +83,8 @@ public class JclParserGenericTest {
     public void testIfSimple() {
         parse("/unit/records/record/ifStmt", "<ifStmt>", JclParser.RULE_ifStmt,
                 lines("// IF CODE THEN          JUMP TO TEST",
-                      "// EXEC PROC=TEST"
+                      "// EXEC PROC=TEST",
+                      "// ENDIF"
                 ));
     }
 
