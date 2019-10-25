@@ -57,7 +57,8 @@ import org.slf4j.LoggerFactory;
         None,
         Param,
         Comment,
-        String
+        String,
+        IfExpr
     }
 
     private int rightMargin = JclParserOpts.RIGHT_MARGIN_DEFAULT;
@@ -358,6 +359,8 @@ CONT_EAT_SPACE_BLANK: F_BLANK {
     } else if (this.cont == Cont.String) {
         mode = MODE_PARAM;
         cont = Cont.String;
+    } else if (this.cont == Cont.IfExpr) {
+        mode = MODE_IF;
     }
     
     _mode(mode, cont);
@@ -452,6 +455,10 @@ EXPR_LP: '('
 ;
 
 EXPR_RP: ')'
+;
+
+IF_NL: '\r'? '\n'
+    { _mode(DEFAULT_MODE, Cont.IfExpr); } -> channel(HIDDEN), type(NL)
 ;
 
 mode MODE_IF_EAT_NL;
