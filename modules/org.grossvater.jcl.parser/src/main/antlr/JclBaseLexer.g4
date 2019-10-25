@@ -406,7 +406,7 @@ THEN: 'THEN'
 IF_BLANK: F_BLANK -> channel(HIDDEN), type(BLANK)
 ;
 
-EXPR_TOKEN: [a-zA-Z_$#@] [a-zA-Z_$#@0-9]+
+EXPR_TOKEN: [a-zA-Z_$#@] [a-zA-Z_$#@0-9]*
 ;
 
 EXPR_DOT: '.'
